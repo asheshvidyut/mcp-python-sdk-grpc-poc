@@ -13,7 +13,6 @@ from mcp.client.stdio import StdioServerParameters, _create_platform_compatible_
 from mcp.shared.exceptions import McpError
 from mcp.shared.message import SessionMessage
 from mcp.types import CONNECTION_CLOSED, JSONRPCMessage, JSONRPCRequest, JSONRPCResponse
-from ..shared.test_win32_utils import escape_path_for_python
 
 from ..shared.test_win32_utils import escape_path_for_python
 

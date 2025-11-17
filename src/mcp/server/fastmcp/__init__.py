@@ -5,5 +5,5 @@ from importlib.metadata import version
 from .server import Context, FastMCP
 from .utilities.types import Image
 
-__version__ = "1.6.0"
+__version__ = version("mcp")
 __all__ = ["FastMCP", "Context", "Image"]
