@@ -8,10 +8,10 @@ from starlette.responses import Response
 from starlette.routing import Route, request_response  # type: ignore
 from starlette.types import ASGIApp
 
-from mcp_grpc.server.auth.handlers.authorize import AuthorizationHandler
-from mcp_grpc.server.auth.handlers.metadata import MetadataHandler
-from mcp_grpc.server.auth.handlers.register import RegistrationHandler
-from mcp_grpc.server.auth.handlers.revoke import RevocationHandler
+from mcp.server.auth.handlers.authorize import AuthorizationHandler
+from mcp.server.auth.handlers.metadata import MetadataHandler
+from mcp.server.auth.handlers.register import RegistrationHandler
+from mcp.server.auth.handlers.revoke import RevocationHandler
 from mcp_grpc.server.auth.handlers.token import TokenHandler
 from mcp_grpc.server.auth.middleware.client_auth import ClientAuthenticator
 from mcp_grpc.server.auth.provider import OAuthAuthorizationServerProvider

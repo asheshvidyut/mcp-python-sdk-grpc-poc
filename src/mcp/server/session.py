@@ -45,15 +45,15 @@ import anyio.lowlevel
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 from pydantic import AnyUrl
 
-import mcp_grpc.types as types
-from mcp_grpc.server.models import InitializationOptions
-from mcp_grpc.shared.message import ServerMessageMetadata, SessionMessage
-from mcp_grpc.shared.session import (
+import mcp.types as types
+from mcp.server.models import InitializationOptions
+from mcp.shared.message import ServerMessageMetadata, SessionMessage
+from mcp.shared.session import (
     BaseSession,
     RequestResponder,
 )
-from mcp_grpc.server.transport_session import TransportSession
-from mcp_grpc.shared.version import SUPPORTED_PROTOCOL_VERSIONS
+from mcp.server.transport_session import TransportSession
+from mcp.shared.version import SUPPORTED_PROTOCOL_VERSIONS
 
 
 class InitializationState(Enum):

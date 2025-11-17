@@ -8,8 +8,8 @@ from typing import Generic, Literal, TypeVar, Union, get_args, get_origin
 from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 
-from mcp_grpc.server.session import ServerSession
-from mcp_grpc.types import RequestId
+from mcp.server.session import ServerSession
+from mcp.types import RequestId
 
 ElicitSchemaModelT = TypeVar("ElicitSchemaModelT", bound=BaseModel)
 

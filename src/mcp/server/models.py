@@ -5,7 +5,7 @@ and tools.
 
 from pydantic import BaseModel
 
-from mcp_grpc.types import (
+from mcp.types import (
     ServerCapabilities,
 )
 

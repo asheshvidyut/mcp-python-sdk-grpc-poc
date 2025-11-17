@@ -8,8 +8,8 @@ import sys
 from pathlib import Path
 from typing import Annotated, Any
 
-from mcp_grpc.server import FastMCP
-from mcp_grpc.server import Server as LowLevelServer
+from mcp.server import FastMCP
+from mcp.server import Server as LowLevelServer
 
 try:
     import typer
@@ -18,8 +18,8 @@ except ImportError:
     sys.exit(1)
 
 try:
-    from mcp_grpc.cli import claude
-    from mcp_grpc.server.fastmcp.utilities.logging import get_logger
+    from mcp.cli import claude
+    from mcp.server.fastmcp.utilities.logging import get_logger
 except ImportError:
     print("Error: mcp.server.fastmcp is not installed or not in PYTHONPATH")
     sys.exit(1)

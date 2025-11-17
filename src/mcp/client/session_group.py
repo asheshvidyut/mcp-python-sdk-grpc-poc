@@ -19,13 +19,13 @@ import anyio
 from pydantic import BaseModel
 from typing_extensions import Self
 
-import mcp_grpc
-from mcp_grpc import types
-from mcp_grpc.client.session import TransportSession
-from mcp_grpc.client.sse import sse_client
-from mcp_grpc.client.stdio import StdioServerParameters
-from mcp_grpc.client.streamable_http import streamablehttp_client
-from mcp_grpc.shared.exceptions import McpError
+import mcp
+from mcp import types
+from mcp.client.session import TransportSession
+from mcp.client.sse import sse_client
+from mcp.client.stdio import StdioServerParameters
+from mcp.client.streamable_http import streamablehttp_client
+from mcp.shared.exceptions import McpError
 
 
 class SseServerParameters(BaseModel):
@@ -97,8 +97,8 @@ class ClientSessionGroup:
     _tools: dict[str, types.Tool]
 
     # Client-server connection management.
-    _sessions: dict[mcp_grpc.TransportSession, _ComponentNames]
-    _tool_to_session: dict[str, mcp_grpc.TransportSession]
+    _sessions: dict[mcp.TransportSession, _ComponentNames]
+    _tool_to_session: dict[str, mcp.TransportSession]
     _exit_stack: contextlib.AsyncExitStack
     _session_exit_stacks: dict[mcp_grpc.TransportSession, contextlib.AsyncExitStack]
 

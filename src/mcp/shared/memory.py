@@ -10,8 +10,8 @@ from typing import Any
 import anyio
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 
-import mcp_grpc.types as types
-from mcp_grpc.client.session import (
+import mcp.types as types
+from mcp.client.session import (
     ClientSession,
     TransportSession,
     ElicitationFnT,
@@ -20,8 +20,8 @@ from mcp_grpc.client.session import (
     MessageHandlerFnT,
     SamplingFnT,
 )
-from mcp_grpc.server import Server
-from mcp_grpc.shared.message import SessionMessage
+from mcp.server import Server
+from mcp.shared.message import SessionMessage
 
 MessageStream = tuple[MemoryObjectReceiveStream[SessionMessage | Exception], MemoryObjectSendStream[SessionMessage]]
 

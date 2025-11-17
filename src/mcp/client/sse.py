@@ -9,9 +9,9 @@ from anyio.abc import TaskStatus
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 from httpx_sse import aconnect_sse
 
-import mcp_grpc.types as types
-from mcp_grpc.shared._httpx_utils import McpHttpClientFactory, create_mcp_http_client
-from mcp_grpc.shared.message import SessionMessage
+import mcp.types as types
+from mcp.shared._httpx_utils import McpHttpClientFactory, create_mcp_http_client
+from mcp.shared.message import SessionMessage
 
 logger = logging.getLogger(__name__)
 

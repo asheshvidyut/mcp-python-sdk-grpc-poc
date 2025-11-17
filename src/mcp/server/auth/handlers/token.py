@@ -7,9 +7,9 @@ from typing import Annotated, Any, Literal
 from pydantic import AnyHttpUrl, AnyUrl, BaseModel, Field, RootModel, ValidationError
 from starlette.requests import Request
 
-from mcp_grpc.server.auth.errors import stringify_pydantic_error
-from mcp_grpc.server.auth.json_response import PydanticJSONResponse
-from mcp_grpc.server.auth.middleware.client_auth import AuthenticationError, ClientAuthenticator
+from mcp.server.auth.errors import stringify_pydantic_error
+from mcp.server.auth.json_response import PydanticJSONResponse
+from mcp.server.auth.middleware.client_auth import AuthenticationError, ClientAuthenticator
 from mcp_grpc.server.auth.provider import OAuthAuthorizationServerProvider, TokenError, TokenErrorCode
 from mcp_grpc.shared.auth import OAuthToken
 

@@ -51,12 +51,12 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.types import Receive, Scope, Send
 
-import mcp_grpc.types as types
-from mcp_grpc.server.transport_security import (
+import mcp.types as types
+from mcp.server.transport_security import (
     TransportSecurityMiddleware,
     TransportSecuritySettings,
 )
-from mcp_grpc.shared.message import ServerMessageMetadata, SessionMessage
+from mcp.shared.message import ServerMessageMetadata, SessionMessage
 
 logger = logging.getLogger(__name__)
 

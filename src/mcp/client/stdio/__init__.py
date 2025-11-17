@@ -12,15 +12,15 @@ from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStre
 from anyio.streams.text import TextReceiveStream
 from pydantic import BaseModel, Field
 
-import mcp_grpc.types as types
-from mcp_grpc.os.posix.utilities import terminate_posix_process_tree
-from mcp_grpc.os.win32.utilities import (
+import mcp.types as types
+from mcp.os.posix.utilities import terminate_posix_process_tree
+from mcp.os.win32.utilities import (
     FallbackProcess,
     create_windows_process,
     get_windows_executable_command,
     terminate_windows_process_tree,
 )
-from mcp_grpc.shared.message import SessionMessage
+from mcp.shared.message import SessionMessage
 
 logger = logging.getLogger(__name__)
 

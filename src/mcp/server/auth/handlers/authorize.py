@@ -7,8 +7,8 @@ from starlette.datastructures import FormData, QueryParams
 from starlette.requests import Request
 from starlette.responses import RedirectResponse, Response
 
-from mcp_grpc.server.auth.errors import stringify_pydantic_error
-from mcp_grpc.server.auth.json_response import PydanticJSONResponse
+from mcp.server.auth.errors import stringify_pydantic_error
+from mcp.server.auth.json_response import PydanticJSONResponse
 from mcp_grpc.server.auth.provider import (
     AuthorizationErrorCode,
     AuthorizationParams,

@@ -5,8 +5,8 @@ from typing import Generic
 
 from pydantic import BaseModel
 
-from mcp_grpc.shared.context import LifespanContextT, RequestContext
-from mcp_grpc.shared.session import (
+from mcp.shared.context import LifespanContextT, RequestContext
+from mcp.shared.session import (
     BaseSession,
     ReceiveNotificationT,
     ReceiveRequestT,
@@ -14,7 +14,7 @@ from mcp_grpc.shared.session import (
     SendRequestT,
     SendResultT,
 )
-from mcp_grpc.types import ProgressToken
+from mcp.types import ProgressToken
 
 
 class Progress(BaseModel):

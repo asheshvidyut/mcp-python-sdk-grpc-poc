@@ -6,7 +6,7 @@ from pydantic import BaseModel, ValidationError
 from starlette.requests import Request
 from starlette.responses import Response
 
-from mcp_grpc.server.auth.errors import (
+from mcp.server.auth.errors import (
     stringify_pydantic_error,
 )
 from mcp_grpc.server.auth.json_response import PydanticJSONResponse

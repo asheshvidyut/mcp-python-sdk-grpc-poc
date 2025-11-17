@@ -20,16 +20,16 @@ import anyio
 import httpx
 from pydantic import BaseModel, Field, ValidationError
 
-from mcp_grpc.client.streamable_http import MCP_PROTOCOL_VERSION
-from mcp_grpc.shared.auth import (
+from mcp.client.streamable_http import MCP_PROTOCOL_VERSION
+from mcp.shared.auth import (
     OAuthClientInformationFull,
     OAuthClientMetadata,
     OAuthMetadata,
     OAuthToken,
     ProtectedResourceMetadata,
 )
-from mcp_grpc.shared.auth_utils import check_resource_allowed, resource_url_from_server_url
-from mcp_grpc.types import LATEST_PROTOCOL_VERSION
+from mcp.shared.auth_utils import check_resource_allowed, resource_url_from_server_url
+from mcp.types import LATEST_PROTOCOL_VERSION
 
 logger = logging.getLogger(__name__)
 

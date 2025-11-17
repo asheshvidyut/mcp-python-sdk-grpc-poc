@@ -24,13 +24,13 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.types import Receive, Scope, Send
 
-from mcp_grpc.server.transport_security import (
+from mcp.server.transport_security import (
     TransportSecurityMiddleware,
     TransportSecuritySettings,
 )
-from mcp_grpc.shared.message import ServerMessageMetadata, SessionMessage
-from mcp_grpc.shared.version import SUPPORTED_PROTOCOL_VERSIONS
-from mcp_grpc.types import (
+from mcp.shared.message import ServerMessageMetadata, SessionMessage
+from mcp.shared.version import SUPPORTED_PROTOCOL_VERSIONS
+from mcp.types import (
     DEFAULT_NEGOTIATED_VERSION,
     INTERNAL_ERROR,
     INVALID_PARAMS,
