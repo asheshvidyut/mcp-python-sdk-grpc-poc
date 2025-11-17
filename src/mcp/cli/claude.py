@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from mcp.server.fastmcp.utilities.logging import get_logger
+from mcp_grpc.server.fastmcp.utilities.logging import get_logger
 
 logger = get_logger(__name__)
 

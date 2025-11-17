@@ -13,7 +13,7 @@ import pydantic
 import pydantic_core
 from pydantic import AnyUrl, Field, ValidationInfo, validate_call
 
-from mcp.server.fastmcp.resources.base import Resource
+from mcp_grpc.server.fastmcp.resources.base import Resource
 
 
 class TextResource(Resource):

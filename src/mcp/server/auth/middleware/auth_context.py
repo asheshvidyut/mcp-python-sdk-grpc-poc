@@ -2,8 +2,8 @@ import contextvars
 
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from mcp.server.auth.middleware.bearer_auth import AuthenticatedUser
-from mcp.server.auth.provider import AccessToken
+from mcp_grpc.server.auth.middleware.bearer_auth import AuthenticatedUser
+from mcp_grpc.server.auth.provider import AccessToken
 
 # Create a contextvar to store the authenticated user
 # The default is None, indicating no authenticated user is present

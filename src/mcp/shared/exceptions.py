@@ -1,4 +1,4 @@
-from mcp.types import ErrorData
+from mcp_grpc.types import ErrorData
 
 
 class McpError(Exception):

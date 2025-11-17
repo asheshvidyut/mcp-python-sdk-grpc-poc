@@ -15,13 +15,13 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.types import Receive, Scope, Send
 
-from mcp.server.lowlevel.server import Server as MCPServer
-from mcp.server.streamable_http import (
+from mcp_grpc.server.lowlevel.server import Server as MCPServer
+from mcp_grpc.server.streamable_http import (
     MCP_SESSION_ID_HEADER,
     EventStore,
     StreamableHTTPServerTransport,
 )
-from mcp.server.transport_security import TransportSecuritySettings
+from mcp_grpc.server.transport_security import TransportSecuritySettings
 
 logger = logging.getLogger(__name__)
 

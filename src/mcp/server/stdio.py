@@ -26,8 +26,8 @@ import anyio
 import anyio.lowlevel
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 
-import mcp.types as types
-from mcp.shared.message import SessionMessage
+import mcp_grpc.types as types
+from mcp_grpc.shared.message import SessionMessage
 
 
 @asynccontextmanager

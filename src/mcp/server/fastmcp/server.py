@@ -6,7 +6,7 @@ import inspect
 import re
 from collections.abc import AsyncIterator, Awaitable, Callable, Collection, Iterable, Sequence
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
-from typing import Any, Generic, Literal
+from typing import Any, Generic, Literal, Optional
 
 import anyio
 import pydantic_core
@@ -20,34 +20,36 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Mount, Route
 from starlette.types import Receive, Scope, Send
+from concurrent.futures import Executor
 
-from mcp.server.auth.middleware.auth_context import AuthContextMiddleware
-from mcp.server.auth.middleware.bearer_auth import BearerAuthBackend, RequireAuthMiddleware
-from mcp.server.auth.provider import OAuthAuthorizationServerProvider, ProviderTokenVerifier, TokenVerifier
-from mcp.server.auth.settings import AuthSettings
-from mcp.server.elicitation import ElicitationResult, ElicitSchemaModelT, elicit_with_validation
-from mcp.server.fastmcp.exceptions import ResourceError
-from mcp.server.fastmcp.prompts import Prompt, PromptManager
-from mcp.server.fastmcp.resources import FunctionResource, Resource, ResourceManager
-from mcp.server.fastmcp.tools import Tool, ToolManager
-from mcp.server.fastmcp.utilities.logging import configure_logging, get_logger
-from mcp.server.lowlevel.helper_types import ReadResourceContents
-from mcp.server.lowlevel.server import LifespanResultT
-from mcp.server.lowlevel.server import Server as MCPServer
-from mcp.server.lowlevel.server import lifespan as default_lifespan
-from mcp.server.session import ServerSession, ServerSessionT
-from mcp.server.sse import SseServerTransport
-from mcp.server.stdio import stdio_server
-from mcp.server.streamable_http import EventStore
-from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
-from mcp.server.transport_security import TransportSecuritySettings
-from mcp.shared.context import LifespanContextT, RequestContext, RequestT
-from mcp.types import AnyFunction, ContentBlock, GetPromptResult, ToolAnnotations
-from mcp.types import Prompt as MCPPrompt
-from mcp.types import PromptArgument as MCPPromptArgument
-from mcp.types import Resource as MCPResource
-from mcp.types import ResourceTemplate as MCPResourceTemplate
-from mcp.types import Tool as MCPTool
+
+from mcp_grpc.server.auth.middleware.auth_context import AuthContextMiddleware
+from mcp_grpc.server.auth.middleware.bearer_auth import BearerAuthBackend, RequireAuthMiddleware
+from mcp_grpc.server.auth.provider import OAuthAuthorizationServerProvider, ProviderTokenVerifier, TokenVerifier
+from mcp_grpc.server.auth.settings import AuthSettings
+from mcp_grpc.server.elicitation import ElicitationResult, ElicitSchemaModelT, elicit_with_validation
+from mcp_grpc.server.fastmcp.exceptions import ResourceError
+from mcp_grpc.server.fastmcp.prompts import Prompt, PromptManager
+from mcp_grpc.server.fastmcp.resources import FunctionResource, Resource, ResourceManager
+from mcp_grpc.server.fastmcp.tools import Tool, ToolManager
+from mcp_grpc.server.fastmcp.utilities.logging import configure_logging, get_logger
+from mcp_grpc.server.lowlevel.helper_types import ReadResourceContents
+from mcp_grpc.server.lowlevel.server import LifespanResultT
+from mcp_grpc.server.lowlevel.server import Server as MCPServer
+from mcp_grpc.server.lowlevel.server import lifespan as default_lifespan
+from mcp_grpc.server.session import ServerSession, ServerSessionT
+from mcp_grpc.server.sse import SseServerTransport
+from mcp_grpc.server.stdio import stdio_server
+from mcp_grpc.server.streamable_http import EventStore
+from mcp_grpc.server.streamable_http_manager import StreamableHTTPSessionManager
+from mcp_grpc.server.transport_security import TransportSecuritySettings
+from mcp_grpc.shared.context import LifespanContextT, RequestContext, RequestT
+from mcp_grpc.types import AnyFunction, ContentBlock, GetPromptResult, ToolAnnotations
+from mcp_grpc.types import Prompt as MCPPrompt
+from mcp_grpc.types import PromptArgument as MCPPromptArgument
+from mcp_grpc.types import Resource as MCPResource
+from mcp_grpc.types import ResourceTemplate as MCPResourceTemplate
+from mcp_grpc.types import Tool as MCPTool
 
 logger = get_logger(__name__)
 
@@ -83,6 +85,18 @@ class Settings(BaseSettings, Generic[LifespanResultT]):
     json_response: bool
     stateless_http: bool
     """Define if the server should create a new transport per request."""
+
+    # gRPC settings
+    # TODO(asheshvidyut): Implement proper type hints for gRPC settings.
+    target: str
+    grpc_enable_reflection: bool
+    grpc_migration_thread_pool: Optional[Executor]
+    grpc_handlers: Optional[Any]
+    grpc_interceptors: Optional[Sequence[Any]]
+    grpc_options: Optional[Any]
+    grpc_maximum_concurrent_rpcs: Optional[int]
+    grpc_compression: Optional[Any]
+    grpc_credentials: Optional[Any]
 
     # resource settings
     warn_on_duplicate_resources: bool
@@ -145,6 +159,15 @@ class FastMCP(Generic[LifespanResultT]):
         lifespan: Callable[[FastMCP[LifespanResultT]], AbstractAsyncContextManager[LifespanResultT]] | None = None,
         auth: AuthSettings | None = None,
         transport_security: TransportSecuritySettings | None = None,
+        target: str = "127.0.0.1:50051",
+        grpc_enable_reflection: bool = False,
+        grpc_migration_thread_pool: Optional[Executor] = None,
+        grpc_handlers: Optional[Sequence[Any]] = None,
+        grpc_interceptors: Optional[Sequence[Any]] = None,
+        grpc_options: Optional[Any] = None,
+        grpc_maximum_concurrent_rpcs: Optional[int] = None,
+        grpc_compression: Optional[Any] = None,
+        grpc_credentials: Optional[Any] = None,
     ):
         self.settings = Settings(
             debug=debug,
@@ -164,6 +187,15 @@ class FastMCP(Generic[LifespanResultT]):
             lifespan=lifespan,
             auth=auth,
             transport_security=transport_security,
+            target=target,
+            grpc_enable_reflection=grpc_enable_reflection,
+            grpc_migration_thread_pool=grpc_migration_thread_pool,
+            grpc_handlers=grpc_handlers,
+            grpc_interceptors=grpc_interceptors,
+            grpc_options=grpc_options,
+            grpc_maximum_concurrent_rpcs=grpc_maximum_concurrent_rpcs,
+            grpc_compression=grpc_compression,
+            grpc_credentials=grpc_credentials,
         )
 
         self._mcp_server = MCPServer(
@@ -232,7 +264,7 @@ class FastMCP(Generic[LifespanResultT]):
 
     def run(
         self,
-        transport: Literal["stdio", "sse", "streamable-http"] = "stdio",
+        transport: Literal["stdio", "sse", "streamable-http", "grpc"] = "stdio",
         mount_path: str | None = None,
     ) -> None:
         """Run the FastMCP server. Note this is a synchronous function.
@@ -241,7 +273,7 @@ class FastMCP(Generic[LifespanResultT]):
             transport: Transport protocol to use ("stdio", "sse", or "streamable-http")
             mount_path: Optional mount path for SSE transport
         """
-        TRANSPORTS = Literal["stdio", "sse", "streamable-http"]
+        TRANSPORTS = Literal["stdio", "sse", "streamable-http", "grpc"]
         if transport not in TRANSPORTS.__args__:  # type: ignore
             raise ValueError(f"Unknown transport: {transport}")
 
@@ -252,6 +284,27 @@ class FastMCP(Generic[LifespanResultT]):
                 anyio.run(lambda: self.run_sse_async(mount_path))
             case "streamable-http":
                 anyio.run(self.run_streamable_http_async)
+            case "grpc":
+                anyio.run(self.run_grpc_async)
+
+    def add_to_existing_server(
+        self,
+        server: Any,
+        transport: Literal["sse", "streamable-http", "grpc"] = "grpc",
+    ) -> None:
+        match transport:
+            case "grpc":
+                """Attach the FastMCP server with a gRPC server."""
+                from mcp_grpc.server.grpc import (  # pylint: disable=g-import-not-at-top
+                    attach_mcp_server_to_grpc_server,
+                )
+                attach_mcp_server_to_grpc_server(self, server)
+            case "streamable-http":
+                raise ValueError("HTTP is not supported.")
+            case "sse":
+                raise ValueError("SSE is not supported.")
+            case _:
+                raise ValueError(f"Unknown transport: {transport}")
 
     def _setup_handlers(self) -> None:
         """Set up core MCP protocol handlers."""
@@ -292,9 +345,14 @@ class FastMCP(Generic[LifespanResultT]):
             request_context = None
         return Context(request_context=request_context, fastmcp=self)
 
-    async def call_tool(self, name: str, arguments: dict[str, Any]) -> Sequence[ContentBlock] | dict[str, Any]:
+    async def call_tool(
+        self, name: str, arguments: dict[str, Any], request_context: RequestContext | None = None
+    ) -> Sequence[ContentBlock] | dict[str, Any]:
         """Call a tool by name with arguments."""
-        context = self.get_context()
+        if request_context:
+            context = Context(request_context=request_context, fastmcp=self)
+        else:
+            context = self.get_context()
         return await self._tool_manager.call_tool(name, arguments, context=context, convert_result=True)
 
     async def list_resources(self) -> list[MCPResource]:
@@ -320,6 +378,7 @@ class FastMCP(Generic[LifespanResultT]):
                 name=template.name,
                 title=template.title,
                 description=template.description,
+                mimeType=template.mime_type,
             )
             for template in templates
         ]
@@ -675,6 +734,20 @@ class FastMCP(Generic[LifespanResultT]):
         server = uvicorn.Server(config)
         await server.serve()
 
+    async def run_grpc_async(self) -> None:
+        """Run the server with gRPC transport."""
+        # Imports are not at the top of file because grpc
+        # is an optional dependency.
+        from mcp_grpc.server.grpc import create_mcp_grpc_server # pylint: disable=g-import-not-at-top
+        server = await create_mcp_grpc_server(
+            mcp_server=self,
+            target=self.settings.target
+        )
+        try:
+            await server.wait_for_termination()
+        finally:
+            await server.stop(1)
+
     async def run_streamable_http_async(self) -> None:
         """Run the server using StreamableHTTP transport."""
         import uvicorn
@@ -774,7 +847,7 @@ class FastMCP(Generic[LifespanResultT]):
 
             # Add auth endpoints if auth server provider is configured
             if self._auth_server_provider:
-                from mcp.server.auth.routes import create_auth_routes
+                from mcp_grpc.server.auth.routes import create_auth_routes
 
                 routes.extend(
                     create_auth_routes(
@@ -833,7 +906,7 @@ class FastMCP(Generic[LifespanResultT]):
             )
         # Add protected resource metadata endpoint if configured as RS
         if self.settings.auth and self.settings.auth.resource_server_url:
-            from mcp.server.auth.routes import create_protected_resource_routes
+            from mcp_grpc.server.auth.routes import create_protected_resource_routes
 
             routes.extend(
                 create_protected_resource_routes(
@@ -887,7 +960,7 @@ class FastMCP(Generic[LifespanResultT]):
 
             # Add auth endpoints if auth server provider is configured
             if self._auth_server_provider:
-                from mcp.server.auth.routes import create_auth_routes
+                from mcp_grpc.server.auth.routes import create_auth_routes
 
                 routes.extend(
                     create_auth_routes(
@@ -927,9 +1000,9 @@ class FastMCP(Generic[LifespanResultT]):
 
         # Add protected resource metadata endpoint if configured as RS
         if self.settings.auth and self.settings.auth.resource_server_url:
-            from mcp.server.auth.handlers.metadata import ProtectedResourceMetadataHandler
-            from mcp.server.auth.routes import cors_middleware
-            from mcp.shared.auth import ProtectedResourceMetadata
+            from mcp_grpc.server.auth.handlers.metadata import ProtectedResourceMetadataHandler
+            from mcp_grpc.server.auth.routes import cors_middleware
+            from mcp_grpc.shared.auth import ProtectedResourceMetadata
 
             protected_resource_metadata = ProtectedResourceMetadata(
                 resource=self.settings.auth.resource_server_url,

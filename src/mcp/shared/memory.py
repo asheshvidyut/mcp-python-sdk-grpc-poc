@@ -10,17 +10,18 @@ from typing import Any
 import anyio
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 
-import mcp.types as types
-from mcp.client.session import (
+import mcp_grpc.types as types
+from mcp_grpc.client.session import (
     ClientSession,
+    TransportSession,
     ElicitationFnT,
     ListRootsFnT,
     LoggingFnT,
     MessageHandlerFnT,
     SamplingFnT,
 )
-from mcp.server import Server
-from mcp.shared.message import SessionMessage
+from mcp_grpc.server import Server
+from mcp_grpc.shared.message import SessionMessage
 
 MessageStream = tuple[MemoryObjectReceiveStream[SessionMessage | Exception], MemoryObjectSendStream[SessionMessage]]
 
@@ -61,7 +62,7 @@ async def create_connected_server_and_client_session(
     client_info: types.Implementation | None = None,
     raise_exceptions: bool = False,
     elicitation_callback: ElicitationFnT | None = None,
-) -> AsyncGenerator[ClientSession, None]:
+) -> AsyncGenerator[TransportSession, None]:
     """Creates a ClientSession that is connected to a running MCP server."""
     async with create_client_server_memory_streams() as (
         client_streams,
