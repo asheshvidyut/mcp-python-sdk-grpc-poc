@@ -8,7 +8,6 @@ from mcp.shared.message import SessionMessage
 from mcp.shared.session import BaseSession, RequestId, SendResultT
 from mcp.types import ClientNotification, ClientRequest, ClientResult, EmptyResult, ErrorData, PingRequest
 
-
 @pytest.mark.anyio
 async def test_send_request_stream_cleanup():
     """

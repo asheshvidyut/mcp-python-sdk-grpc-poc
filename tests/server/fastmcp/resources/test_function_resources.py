@@ -72,6 +72,7 @@ class TestFunctionResource:
         assert isinstance(content, str)
         assert '"key": "value"' in content
 
+
     @pytest.mark.anyio
     async def test_error_handling(self):
         """Test error handling in FunctionResource."""

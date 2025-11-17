@@ -20,12 +20,13 @@ import pytest
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import _create_platform_compatible_process, stdio_client
 
+from ..shared.test_win32_utils import escape_path_for_python
+
 # TODO(Marcelo): This doesn't seem to be the right path. We should fix this.
 if TYPE_CHECKING:
     from ..shared.test_win32_utils import escape_path_for_python
 else:
     from tests.shared.test_win32_utils import escape_path_for_python
-
 
 @pytest.mark.anyio
 async def test_lifespan_cleanup_executed():
@@ -58,7 +59,6 @@ async def test_lifespan_cleanup_executed():
         from pathlib import Path
         from contextlib import asynccontextmanager
         from mcp.server.fastmcp import FastMCP
-
         STARTUP_MARKER = {escape_path_for_python(startup_marker)}
         CLEANUP_MARKER = {escape_path_for_python(cleanup_marker)}
 
@@ -166,7 +166,6 @@ async def test_stdin_close_triggers_cleanup():
         from pathlib import Path
         from contextlib import asynccontextmanager
         from mcp.server.fastmcp import FastMCP
-
         STARTUP_MARKER = {escape_path_for_python(startup_marker)}
         CLEANUP_MARKER = {escape_path_for_python(cleanup_marker)}
 
