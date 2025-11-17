@@ -3,15 +3,15 @@ from typing import Any
 import anyio
 import pytest
 
-import mcp_grpc.types as types
-from mcp_grpc.client.session import ClientSession
-from mcp_grpc.server import Server
-from mcp_grpc.server.lowlevel import NotificationOptions
-from mcp_grpc.server.models import InitializationOptions
-from mcp_grpc.server.session import ServerSession
-from mcp_grpc.shared.message import SessionMessage
-from mcp_grpc.shared.session import RequestResponder
-from mcp_grpc.types import (
+import mcp.types as types
+from mcp.client.session import ClientSession
+from mcp.server import Server
+from mcp.server.lowlevel import NotificationOptions
+from mcp.server.models import InitializationOptions
+from mcp.server.session import ServerSession
+from mcp.shared.message import SessionMessage
+from mcp.shared.session import RequestResponder
+from mcp.types import (
     ClientNotification,
     Completion,
     CompletionArgument,

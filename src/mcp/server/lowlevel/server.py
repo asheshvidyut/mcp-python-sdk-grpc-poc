@@ -81,15 +81,15 @@ from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStre
 from pydantic import AnyUrl
 from typing_extensions import TypeVar
 
-import mcp_grpc.types as types
-from mcp_grpc.server.lowlevel.helper_types import ReadResourceContents
-from mcp_grpc.server.models import InitializationOptions
-from mcp_grpc.server.session import ServerSession
-from mcp_grpc.server.stdio import stdio_server as stdio_server
-from mcp_grpc.shared.context import RequestContext
-from mcp_grpc.shared.exceptions import McpError
-from mcp_grpc.shared.message import ServerMessageMetadata, SessionMessage
-from mcp_grpc.shared.session import RequestResponder
+import mcp.types as types
+from mcp.server.lowlevel.helper_types import ReadResourceContents
+from mcp.server.models import InitializationOptions
+from mcp.server.session import ServerSession
+from mcp.server.stdio import stdio_server as stdio_server
+from mcp.shared.context import RequestContext
+from mcp.shared.exceptions import McpError
+from mcp.shared.message import ServerMessageMetadata, SessionMessage
+from mcp.shared.session import RequestResponder
 
 logger = logging.getLogger(__name__)
 

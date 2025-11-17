@@ -2,8 +2,8 @@ from collections.abc import Callable
 
 import pytest
 
-from mcp_grpc.server.fastmcp import FastMCP
-from mcp_grpc.shared.memory import create_connected_server_and_client_session as create_session
+from mcp.server.fastmcp import FastMCP
+from mcp.shared.memory import create_connected_server_and_client_session as create_session
 from .conftest import StreamSpyCollection
 
 pytestmark = pytest.mark.anyio

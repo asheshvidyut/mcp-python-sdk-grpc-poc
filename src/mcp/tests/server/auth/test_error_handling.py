@@ -30,7 +30,7 @@ def oauth_provider():
 
 @pytest.fixture
 def app(oauth_provider: MockOAuthProvider):
-    from mcp_grpc.server.auth.settings import ClientRegistrationOptions, RevocationOptions
+    from mcp.server.auth.settings import ClientRegistrationOptions, RevocationOptions
 
     # Enable client registration
     client_registration_options = ClientRegistrationOptions(enabled=True)

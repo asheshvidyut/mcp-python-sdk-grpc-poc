@@ -1,19 +1,19 @@
 import pytest
 from pydantic import FileUrl
 
-from mcp_grpc.client.session import TransportSession
-from mcp_grpc.server.fastmcp.server import Context
-from mcp_grpc.server.session import ServerSession
-from mcp_grpc.shared.context import RequestContext
-from mcp_grpc.shared.memory import (
+from mcp.client.session import TransportSession
+from mcp.server.fastmcp.server import Context
+from mcp.server.session import ServerSession
+from mcp.shared.context import RequestContext
+from mcp.shared.memory import (
     create_connected_server_and_client_session as create_session,
 )
-from mcp_grpc.types import ListRootsResult, Root, TextContent
+from mcp.types import ListRootsResult, Root, TextContent
 
 
 @pytest.mark.anyio
 async def test_list_roots_callback():
-    from mcp_grpc.server.fastmcp import FastMCP
+    from mcp.server.fastmcp import FastMCP
 
     server = FastMCP("test")
 

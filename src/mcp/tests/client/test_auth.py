@@ -10,8 +10,8 @@ import pytest
 from inline_snapshot import Is, snapshot
 from pydantic import AnyHttpUrl, AnyUrl
 
-from mcp_grpc.client.auth import OAuthClientProvider, PKCEParameters
-from mcp_grpc.shared.auth import (
+from mcp.client.auth import OAuthClientProvider, PKCEParameters
+from mcp.shared.auth import (
     OAuthClientInformationFull,
     OAuthClientMetadata,
     OAuthToken,
@@ -751,8 +751,8 @@ def test_build_metadata(
     registration_endpoint: str,
     revocation_endpoint: str,
 ):
-    from mcp_grpc.server.auth.routes import build_metadata
-    from mcp_grpc.server.auth.settings import ClientRegistrationOptions, RevocationOptions
+    from mcp.server.auth.routes import build_metadata
+    from mcp.server.auth.settings import ClientRegistrationOptions, RevocationOptions
 
     metadata = build_metadata(
         issuer_url=AnyHttpUrl(issuer_url),

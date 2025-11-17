@@ -1,6 +1,6 @@
 """Tests for OAuth 2.0 shared code."""
 
-from mcp_grpc.shared.auth import OAuthMetadata
+from mcp.shared.auth import OAuthMetadata
 
 
 class TestOAuthMetadata:

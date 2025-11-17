@@ -8,12 +8,12 @@ import anyio
 import pytest
 from pydantic import TypeAdapter
 
-from mcp_grpc.server.fastmcp import Context, FastMCP
-from mcp_grpc.server.lowlevel.server import NotificationOptions, Server
-from mcp_grpc.server.models import InitializationOptions
-from mcp_grpc.server.session import ServerSession
-from mcp_grpc.shared.message import SessionMessage
-from mcp_grpc.types import (
+from mcp.server.fastmcp import Context, FastMCP
+from mcp.server.lowlevel.server import NotificationOptions, Server
+from mcp.server.models import InitializationOptions
+from mcp.server.session import ServerSession
+from mcp.shared.message import SessionMessage
+from mcp.types import (
     ClientCapabilities,
     Implementation,
     InitializeRequestParams,

@@ -7,16 +7,16 @@ import pytest
 from pydantic import AnyUrl, BaseModel
 from starlette.routing import Mount, Route
 
-from mcp_grpc.server.fastmcp import Context, FastMCP
-from mcp_grpc.server.fastmcp.prompts.base import Message, UserMessage
-from mcp_grpc.server.fastmcp.resources import FileResource, FunctionResource
-from mcp_grpc.server.fastmcp.utilities.types import Image
-from mcp_grpc.server.session import ServerSession
-from mcp_grpc.shared.exceptions import McpError
-from mcp_grpc.shared.memory import (
+from mcp.server.fastmcp import Context, FastMCP
+from mcp.server.fastmcp.prompts.base import Message, UserMessage
+from mcp.server.fastmcp.resources import FileResource, FunctionResource
+from mcp.server.fastmcp.utilities.types import Image
+from mcp.server.session import ServerSession
+from mcp.shared.exceptions import McpError
+from mcp.shared.memory import (
     create_connected_server_and_client_session as client_session,
 )
-from mcp_grpc.types import (
+from mcp.types import (
     AudioContent,
     BlobResourceContents,
     ContentBlock,
@@ -27,7 +27,7 @@ from mcp_grpc.types import (
 )
 
 if TYPE_CHECKING:
-    from mcp_grpc.server.fastmcp import Context
+    from mcp.server.fastmcp import Context
 
 
 class TestServer:
@@ -807,7 +807,7 @@ class TestContextInjection:
 
         mcp.add_tool(logging_tool)
 
-        with patch("mcp_grpc.server.session.ServerSession.send_log_message") as mock_log:
+        with patch("mcp.server.session.ServerSession.send_log_message") as mock_log:
             async with client_session(mcp._mcp_server) as client:
                 result = await client.call_tool("logging_tool", {"msg": "test"})
                 assert len(result.content) == 1

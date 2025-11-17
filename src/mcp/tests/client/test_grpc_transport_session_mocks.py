@@ -6,22 +6,22 @@ import pytest
 import time
 import unittest.mock
 
-from mcp_grpc.proto import mcp_pb2, mcp_pb2_grpc
-from mcp_grpc.shared import version
+from mcp.proto import mcp_pb2, mcp_pb2_grpc
+from mcp.shared import version
 from google3.google.protobuf import struct_pb2
 
-from mcp_grpc.client.grpc_transport_session import GRPCTransportSession
-from mcp_grpc.client.cache import CacheEntry
-from mcp_grpc.client import session_common
-from mcp_grpc.shared.exceptions import McpError
-from mcp_grpc import types
+from mcp.client.grpc_transport_session import GRPCTransportSession
+from mcp.client.cache import CacheEntry
+from mcp.client import session_common
+from mcp.shared.exceptions import McpError
+from mcp import types
 
 # Fixtures from test_grpc_transport_session.py
 import socket
 from collections.abc import Generator
-from mcp_grpc.server.fastmcp.server import Context, FastMCP
-from mcp_grpc.server.grpc import create_mcp_grpc_server
-from mcp_grpc import types
+from mcp.server.fastmcp.server import Context, FastMCP
+from mcp.server.grpc import create_mcp_server
+from mcp import types
 from io import BytesIO
 from PIL import Image as PILImage
 import base64
@@ -52,7 +52,7 @@ def server_port() -> int:
 async def grpc_server(server_port: int) -> Generator[None, None, None]:
     """Start a gRPC server in process."""
     server_instance = setup_test_server(server_port)
-    server = await create_mcp_grpc_server(
+    server = await create_mcp_server(
         target=f"127.0.0.1:{server_port}", mcp_server=server_instance
     )
 
@@ -474,7 +474,7 @@ async def test_call_tool_grpc_transport_session_timeout_override(grpc_server: No
             yield response_mock
 
         with mock.patch(
-            "mcp_grpc.client.grpc_transport_session.convert.proto_result_to_content"
+            "mcp.client.grpc_transport_session.convert.proto_result_to_content"
         ) as mock_convert, mock.patch.object(
             transport, "_validate_tool_result", mock.AsyncMock()
         ):
@@ -514,7 +514,7 @@ async def test_call_tool_grpc_transport_session_timeout_default(grpc_server: Non
             yield response_mock
 
         with mock.patch(
-            "mcp_grpc.client.grpc_transport_session.convert.proto_result_to_content"
+            "mcp.client.grpc_transport_session.convert.proto_result_to_content"
         ) as mock_convert, mock.patch.object(
             transport, "_validate_tool_result", mock.AsyncMock()
         ):
@@ -549,7 +549,7 @@ async def test_call_tool_grpc_transport_no_session_timeout_with_call_timeout(grp
         async def aiterator():
             yield response_mock
         with mock.patch(
-            "mcp_grpc.client.grpc_transport_session.convert.proto_result_to_content"
+            "mcp.client.grpc_transport_session.convert.proto_result_to_content"
         ) as mock_convert, mock.patch.object(
             transport_no_session_timeout, "_validate_tool_result", mock.AsyncMock()
         ):
@@ -584,7 +584,7 @@ async def test_call_tool_grpc_transport_no_session_timeout_no_call_timeout(grpc_
         async def aiterator():
             yield response_mock
         with mock.patch(
-            "mcp_grpc.client.grpc_transport_session.convert.proto_result_to_content"
+            "mcp.client.grpc_transport_session.convert.proto_result_to_content"
         ) as mock_convert, mock.patch.object(
             transport_no_session_timeout, "_validate_tool_result", mock.AsyncMock()
         ):

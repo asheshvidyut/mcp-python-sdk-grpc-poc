@@ -5,7 +5,7 @@ import pytest
 from datetime import timedelta
 import datetime
 
-from mcp_grpc.client.cache import CacheEntry
+from mcp.client.cache import CacheEntry
 
 
 def test_cache_entry_initial_state():

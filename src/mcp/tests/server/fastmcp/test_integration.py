@@ -33,14 +33,14 @@ from examples.snippets.servers import (
     structured_output,
     tool_progress,
 )
-from mcp_grpc.client.session import ClientSession
-from mcp_grpc.client.session import TransportSession
-from mcp_grpc.client.sse import sse_client
-from mcp_grpc.client.streamable_http import GetSessionIdCallback, streamablehttp_client
-from mcp_grpc.shared.context import RequestContext
-from mcp_grpc.shared.message import SessionMessage
-from mcp_grpc.shared.session import RequestResponder
-from mcp_grpc.types import (
+from mcp.client.session import ClientSession
+from mcp.client.session import TransportSession
+from mcp.client.sse import sse_client
+from mcp.client.streamable_http import GetSessionIdCallback, streamablehttp_client
+from mcp.shared.context import RequestContext
+from mcp.shared.message import SessionMessage
+from mcp.shared.session import RequestResponder
+from mcp.types import (
     ClientResult,
     CreateMessageRequestParams,
     CreateMessageResult,
@@ -595,7 +595,7 @@ async def test_completion(server_transport: str, server_url: str) -> None:
             assert result.capabilities.prompts is not None
 
             # Test resource completion
-            from mcp_grpc.types import ResourceTemplateReference
+            from mcp.types import ResourceTemplateReference
 
             completion_result = await session.complete(
                 ref=ResourceTemplateReference(type="ref/resource", uri="github://repos/{owner}/{repo}"),
@@ -612,7 +612,7 @@ async def test_completion(server_transport: str, server_url: str) -> None:
             assert "specification" in completion_result.completion.values
 
             # Test prompt completion
-            from mcp_grpc.types import PromptReference
+            from mcp.types import PromptReference
 
             completion_result = await session.complete(
                 ref=PromptReference(type="ref/prompt", name="review_code"),

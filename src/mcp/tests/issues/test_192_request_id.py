@@ -1,10 +1,10 @@
 import anyio
 import pytest
 
-from mcp_grpc.server.lowlevel import NotificationOptions, Server
-from mcp_grpc.server.models import InitializationOptions
-from mcp_grpc.shared.message import SessionMessage
-from mcp_grpc.types import (
+from mcp.server.lowlevel import NotificationOptions, Server
+from mcp.server.models import InitializationOptions
+from mcp.shared.message import SessionMessage
+from mcp.types import (
     LATEST_PROTOCOL_VERSION,
     ClientCapabilities,
     Implementation,

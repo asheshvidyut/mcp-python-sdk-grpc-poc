@@ -13,14 +13,14 @@ from google.protobuf import json_format
 import grpc
 from grpc import aio
 from grpc_reflection.v1alpha import reflection
-from mcp_grpc import types
-from mcp_grpc.proto import mcp_pb2
-from mcp_grpc.proto import mcp_pb2_grpc
-from mcp_grpc.server.grpc_session import GrpcSession
-from mcp_grpc.server.lowlevel.server import RequestContext
-from mcp_grpc.shared import convert
-from mcp_grpc.shared import grpc_utils
-from mcp_grpc.shared import version
+from mcp import types
+from mcp.proto import mcp_pb2
+from mcp.proto import mcp_pb2_grpc
+from mcp.server.grpc_session import GrpcSession
+from mcp.server.lowlevel.server import RequestContext
+from mcp.shared import convert
+from mcp.shared import grpc_utils
+from mcp.shared import version
 
 
 logger = logging.getLogger(__name__)
@@ -332,7 +332,7 @@ def attach_mcp_server_to_grpc_server(
   if mcp_server.settings.grpc_enable_reflection:
     _enable_grpc_reflection(server)
 
-async def create_mcp_grpc_server(
+async def create_mcp_server(
     mcp_server,
     target: str = "127.0.0.1:50051",
 ) -> aio.Server:

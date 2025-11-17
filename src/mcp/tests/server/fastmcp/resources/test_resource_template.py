@@ -4,7 +4,7 @@ from typing import Any
 import pytest
 from pydantic import BaseModel
 
-from mcp_grpc.server.fastmcp.resources import FunctionResource, ResourceTemplate
+from mcp.server.fastmcp.resources import FunctionResource, ResourceTemplate
 
 
 class TestResourceTemplate:

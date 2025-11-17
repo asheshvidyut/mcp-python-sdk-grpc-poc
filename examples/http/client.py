@@ -1,7 +1,7 @@
 import asyncio
 from datetime import timedelta
-from mcp_grpc.client.session import ClientSession
-from mcp_grpc.client.streamable_http import streamablehttp_client
+from mcp.client.session import ClientSession
+from mcp.client.streamable_http import streamablehttp_client
 
 async def main():
     async with streamablehttp_client(

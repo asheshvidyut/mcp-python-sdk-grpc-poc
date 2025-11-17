@@ -5,7 +5,7 @@ from typing import Any
 
 from pydantic import AnyUrl
 
-import mcp_grpc.types as types
+import mcp.types as types
 
 
 class TransportSession(abc.ABC):
@@ -18,8 +18,8 @@ class TransportSession(abc.ABC):
     2. GRPCSession (for gRPC server)
 
     They are embedded in the RequestContext class which is embedded in the
-    mcp_grpc.server.lowlevel.server.py (lowlevel server) and
-    mcp_grpc.server.grpc.py (gRPC server)
+    mcp.server.lowlevel.server.py (lowlevel server) and
+    mcp.server.grpc.py (gRPC server)
 
     """
 

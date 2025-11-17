@@ -4,7 +4,7 @@ import asyncio
 import functools
 import grpc
 from grpc import aio
-from mcp_grpc.shared import version
+from mcp.shared import version
 from typing import Any
 
 

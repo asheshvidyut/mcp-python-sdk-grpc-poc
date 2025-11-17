@@ -3,7 +3,7 @@
 import pytest
 from pydantic import Field
 
-from mcp_grpc.server.fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP
 
 
 @pytest.mark.anyio

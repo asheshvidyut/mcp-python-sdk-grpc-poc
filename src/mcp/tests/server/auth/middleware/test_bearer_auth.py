@@ -11,8 +11,8 @@ from starlette.datastructures import Headers
 from starlette.requests import Request
 from starlette.types import Message, Receive, Scope, Send
 
-from mcp_grpc.server.auth.middleware.bearer_auth import AuthenticatedUser, BearerAuthBackend,RequireAuthMiddleware
-from mcp_grpc.server.auth.provider import AccessToken, OAuthAuthorizationServerProvider, ProviderTokenVerifier
+from mcp.server.auth.middleware.bearer_auth import AuthenticatedUser, BearerAuthBackend,RequireAuthMiddleware
+from mcp.server.auth.provider import AccessToken, OAuthAuthorizationServerProvider, ProviderTokenVerifier
 
 
 class MockOAuthProvider:

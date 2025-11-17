@@ -1,6 +1,6 @@
 """Tests for OAuth 2.0 Resource Indicators utilities."""
 
-from mcp_grpc.shared.auth_utils import check_resource_allowed, resource_url_from_server_url
+from mcp.shared.auth_utils import check_resource_allowed, resource_url_from_server_url
 
 
 class TestResourceUrlFromServerUrl:

@@ -6,8 +6,8 @@ from textwrap import dedent
 import anyio
 import pytest
 
-from mcp_grpc import ClientSession, StdioServerParameters
-from mcp_grpc.client.stdio import stdio_client
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="Windows-specific test")

@@ -3,7 +3,7 @@
 import base64
 from pathlib import Path
 
-from mcp_grpc.types import ImageContent
+from mcp.types import ImageContent
 
 
 class Image:

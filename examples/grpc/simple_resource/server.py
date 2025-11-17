@@ -3,7 +3,7 @@
 from absl import app
 from absl import flags
 from absl import logging
-from mcp_grpc.server import fastmcp
+from mcp.server import fastmcp
 
 _PORT = flags.DEFINE_integer("port", 50052, "Server port")
 

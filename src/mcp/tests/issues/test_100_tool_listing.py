@@ -1,6 +1,6 @@
 import pytest
 
-from mcp_grpc.server.fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP
 
 pytestmark = pytest.mark.anyio
 

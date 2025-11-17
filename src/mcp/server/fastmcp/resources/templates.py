@@ -9,7 +9,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, TypeAdapter, validate_call
 
-from mcp_grpc.server.fastmcp.resources.types import FunctionResource, Resource
+from mcp.server.fastmcp.resources.types import FunctionResource, Resource
 
 
 class ResourceTemplate(BaseModel):

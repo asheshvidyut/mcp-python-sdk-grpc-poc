@@ -5,11 +5,11 @@ from unittest.mock import patch
 
 import pytest
 
-from mcp_grpc.server.lowlevel import Server
-from mcp_grpc.shared.memory import (
+from mcp.server.lowlevel import Server
+from mcp.shared.memory import (
     create_connected_server_and_client_session as client_session,
 )
-from mcp_grpc.types import Tool
+from mcp.types import Tool
 
 
 @contextmanager
@@ -20,7 +20,7 @@ def bypass_server_output_validation():
     its outputs, allowing us to test client-side validation.
     """
     # Patch jsonschema.validate in the server module to disable all validation
-    with patch("mcp_grpc.server.lowlevel.server.jsonschema.validate"):
+    with patch("mcp.server.lowlevel.server.jsonschema.validate"):
         # The mock will simply return None (do nothing) for all validation calls
         yield
 

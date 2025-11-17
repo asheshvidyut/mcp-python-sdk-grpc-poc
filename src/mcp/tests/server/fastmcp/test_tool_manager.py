@@ -6,13 +6,13 @@ from typing import Any, TypedDict
 import pytest
 from pydantic import BaseModel
 
-from mcp_grpc.server.fastmcp import Context, FastMCP
-from mcp_grpc.server.fastmcp.exceptions import ToolError
-from mcp_grpc.server.fastmcp.tools import Tool, ToolManager
-from mcp_grpc.server.fastmcp.utilities.func_metadata import ArgModelBase, FuncMetadata
-from mcp_grpc.server.session import ServerSessionT
-from mcp_grpc.shared.context import LifespanContextT, RequestT
-from mcp_grpc.types import TextContent, ToolAnnotations
+from mcp.server.fastmcp import Context, FastMCP
+from mcp.server.fastmcp.exceptions import ToolError
+from mcp.server.fastmcp.tools import Tool, ToolManager
+from mcp.server.fastmcp.utilities.func_metadata import ArgModelBase, FuncMetadata
+from mcp.server.session import ServerSessionT
+from mcp.shared.context import LifespanContextT, RequestT
+from mcp.types import TextContent, ToolAnnotations
 
 
 class TestAddTools:

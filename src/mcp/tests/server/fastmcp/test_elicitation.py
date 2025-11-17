@@ -7,12 +7,12 @@ from typing import Any
 import pytest
 from pydantic import BaseModel, Field
 
-from mcp_grpc.client.session import TransportSession, ElicitationFnT
-from mcp_grpc.server.fastmcp import Context, FastMCP
-from mcp_grpc.server.session import ServerSession
-from mcp_grpc.shared.context import RequestContext
-from mcp_grpc.shared.memory import create_connected_server_and_client_session
-from mcp_grpc.types import ElicitRequestParams, ElicitResult, TextContent
+from mcp.client.session import TransportSession, ElicitationFnT
+from mcp.server.fastmcp import Context, FastMCP
+from mcp.server.session import ServerSession
+from mcp.shared.context import RequestContext
+from mcp.shared.memory import create_connected_server_and_client_session
+from mcp.types import ElicitRequestParams, ElicitResult, TextContent
 
 
 

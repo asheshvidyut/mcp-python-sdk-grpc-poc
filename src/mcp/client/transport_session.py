@@ -6,8 +6,8 @@ from typing import Any
 
 from pydantic import AnyUrl
 
-from mcp_grpc import types
-from mcp_grpc.shared.session import ProgressFnT
+from mcp import types
+from mcp.shared.session import ProgressFnT
 
 
 class TransportSession(ABC):

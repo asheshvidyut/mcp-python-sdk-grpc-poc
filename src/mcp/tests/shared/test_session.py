@@ -4,13 +4,13 @@ from typing import Any
 import anyio
 import pytest
 
-import mcp_grpc.types as types
-from mcp_grpc.client.session import TransportSession
-from mcp_grpc.client.session import ClientSession
-from mcp_grpc.server.lowlevel.server import Server
-from mcp_grpc.shared.exceptions import McpError
-from mcp_grpc.shared.memory import create_client_server_memory_streams, create_connected_server_and_client_session
-from mcp_grpc.types import (
+import mcp.types as types
+from mcp.client.session import TransportSession
+from mcp.client.session import ClientSession
+from mcp.server.lowlevel.server import Server
+from mcp.shared.exceptions import McpError
+from mcp.shared.memory import create_client_server_memory_streams, create_connected_server_and_client_session
+from mcp.types import (
     CancelledNotification,
     CancelledNotificationParams,
     ClientNotification,

@@ -2,10 +2,10 @@ import pytest
 from pydantic import AnyUrl
 from typing_extensions import AsyncGenerator
 
-from mcp_grpc.client.session import TransportSession
-from mcp_grpc.server import Server
-from mcp_grpc.shared.memory import create_connected_server_and_client_session
-from mcp_grpc.types import EmptyResult, Resource
+from mcp.client.session import TransportSession
+from mcp.server import Server
+from mcp.shared.memory import create_connected_server_and_client_session
+from mcp.types import EmptyResult, Resource
 
 
 @pytest.fixture

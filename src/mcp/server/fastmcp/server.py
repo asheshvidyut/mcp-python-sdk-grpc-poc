@@ -23,33 +23,33 @@ from starlette.types import Receive, Scope, Send
 from concurrent.futures import Executor
 
 
-from mcp_grpc.server.auth.middleware.auth_context import AuthContextMiddleware
-from mcp_grpc.server.auth.middleware.bearer_auth import BearerAuthBackend, RequireAuthMiddleware
-from mcp_grpc.server.auth.provider import OAuthAuthorizationServerProvider, ProviderTokenVerifier, TokenVerifier
-from mcp_grpc.server.auth.settings import AuthSettings
-from mcp_grpc.server.elicitation import ElicitationResult, ElicitSchemaModelT, elicit_with_validation
-from mcp_grpc.server.fastmcp.exceptions import ResourceError
-from mcp_grpc.server.fastmcp.prompts import Prompt, PromptManager
-from mcp_grpc.server.fastmcp.resources import FunctionResource, Resource, ResourceManager
-from mcp_grpc.server.fastmcp.tools import Tool, ToolManager
-from mcp_grpc.server.fastmcp.utilities.logging import configure_logging, get_logger
-from mcp_grpc.server.lowlevel.helper_types import ReadResourceContents
-from mcp_grpc.server.lowlevel.server import LifespanResultT
-from mcp_grpc.server.lowlevel.server import Server as MCPServer
-from mcp_grpc.server.lowlevel.server import lifespan as default_lifespan
-from mcp_grpc.server.session import ServerSession, ServerSessionT
-from mcp_grpc.server.sse import SseServerTransport
-from mcp_grpc.server.stdio import stdio_server
-from mcp_grpc.server.streamable_http import EventStore
-from mcp_grpc.server.streamable_http_manager import StreamableHTTPSessionManager
-from mcp_grpc.server.transport_security import TransportSecuritySettings
-from mcp_grpc.shared.context import LifespanContextT, RequestContext, RequestT
-from mcp_grpc.types import AnyFunction, ContentBlock, GetPromptResult, ToolAnnotations
-from mcp_grpc.types import Prompt as MCPPrompt
-from mcp_grpc.types import PromptArgument as MCPPromptArgument
-from mcp_grpc.types import Resource as MCPResource
-from mcp_grpc.types import ResourceTemplate as MCPResourceTemplate
-from mcp_grpc.types import Tool as MCPTool
+from mcp.server.auth.middleware.auth_context import AuthContextMiddleware
+from mcp.server.auth.middleware.bearer_auth import BearerAuthBackend, RequireAuthMiddleware
+from mcp.server.auth.provider import OAuthAuthorizationServerProvider, ProviderTokenVerifier, TokenVerifier
+from mcp.server.auth.settings import AuthSettings
+from mcp.server.elicitation import ElicitationResult, ElicitSchemaModelT, elicit_with_validation
+from mcp.server.fastmcp.exceptions import ResourceError
+from mcp.server.fastmcp.prompts import Prompt, PromptManager
+from mcp.server.fastmcp.resources import FunctionResource, Resource, ResourceManager
+from mcp.server.fastmcp.tools import Tool, ToolManager
+from mcp.server.fastmcp.utilities.logging import configure_logging, get_logger
+from mcp.server.lowlevel.helper_types import ReadResourceContents
+from mcp.server.lowlevel.server import LifespanResultT
+from mcp.server.lowlevel.server import Server as MCPServer
+from mcp.server.lowlevel.server import lifespan as default_lifespan
+from mcp.server.session import ServerSession, ServerSessionT
+from mcp.server.sse import SseServerTransport
+from mcp.server.stdio import stdio_server
+from mcp.server.streamable_http import EventStore
+from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
+from mcp.server.transport_security import TransportSecuritySettings
+from mcp.shared.context import LifespanContextT, RequestContext, RequestT
+from mcp.types import AnyFunction, ContentBlock, GetPromptResult, ToolAnnotations
+from mcp.types import Prompt as MCPPrompt
+from mcp.types import PromptArgument as MCPPromptArgument
+from mcp.types import Resource as MCPResource
+from mcp.types import ResourceTemplate as MCPResourceTemplate
+from mcp.types import Tool as MCPTool
 
 logger = get_logger(__name__)
 
@@ -295,7 +295,7 @@ class FastMCP(Generic[LifespanResultT]):
         match transport:
             case "grpc":
                 """Attach the FastMCP server with a gRPC server."""
-                from mcp_grpc.server.grpc import (  # pylint: disable=g-import-not-at-top
+                from mcp.server.grpc import (  # pylint: disable=g-import-not-at-top
                     attach_mcp_server_to_grpc_server,
                 )
                 attach_mcp_server_to_grpc_server(self, server)
@@ -738,8 +738,8 @@ class FastMCP(Generic[LifespanResultT]):
         """Run the server with gRPC transport."""
         # Imports are not at the top of file because grpc
         # is an optional dependency.
-        from mcp_grpc.server.grpc import create_mcp_grpc_server # pylint: disable=g-import-not-at-top
-        server = await create_mcp_grpc_server(
+        from mcp.server.grpc import create_mcp_server # pylint: disable=g-import-not-at-top
+        server = await create_mcp_server(
             mcp_server=self,
             target=self.settings.target
         )
@@ -847,7 +847,7 @@ class FastMCP(Generic[LifespanResultT]):
 
             # Add auth endpoints if auth server provider is configured
             if self._auth_server_provider:
-                from mcp_grpc.server.auth.routes import create_auth_routes
+                from mcp.server.auth.routes import create_auth_routes
 
                 routes.extend(
                     create_auth_routes(
@@ -906,7 +906,7 @@ class FastMCP(Generic[LifespanResultT]):
             )
         # Add protected resource metadata endpoint if configured as RS
         if self.settings.auth and self.settings.auth.resource_server_url:
-            from mcp_grpc.server.auth.routes import create_protected_resource_routes
+            from mcp.server.auth.routes import create_protected_resource_routes
 
             routes.extend(
                 create_protected_resource_routes(
@@ -960,7 +960,7 @@ class FastMCP(Generic[LifespanResultT]):
 
             # Add auth endpoints if auth server provider is configured
             if self._auth_server_provider:
-                from mcp_grpc.server.auth.routes import create_auth_routes
+                from mcp.server.auth.routes import create_auth_routes
 
                 routes.extend(
                     create_auth_routes(
@@ -1000,9 +1000,9 @@ class FastMCP(Generic[LifespanResultT]):
 
         # Add protected resource metadata endpoint if configured as RS
         if self.settings.auth and self.settings.auth.resource_server_url:
-            from mcp_grpc.server.auth.handlers.metadata import ProtectedResourceMetadataHandler
-            from mcp_grpc.server.auth.routes import cors_middleware
-            from mcp_grpc.shared.auth import ProtectedResourceMetadata
+            from mcp.server.auth.handlers.metadata import ProtectedResourceMetadataHandler
+            from mcp.server.auth.routes import cors_middleware
+            from mcp.shared.auth import ProtectedResourceMetadata
 
             protected_resource_metadata = ProtectedResourceMetadata(
                 resource=self.settings.auth.resource_server_url,

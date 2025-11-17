@@ -8,11 +8,11 @@ import time
 import anyio
 import pytest
 
-from mcp_grpc.client.session import ClientSession
-from mcp_grpc.client.stdio import StdioServerParameters, _create_platform_compatible_process, stdio_client
-from mcp_grpc.shared.exceptions import McpError
-from mcp_grpc.shared.message import SessionMessage
-from mcp_grpc.types import CONNECTION_CLOSED, JSONRPCMessage, JSONRPCRequest, JSONRPCResponse
+from mcp.client.session import ClientSession
+from mcp.client.stdio import StdioServerParameters, _create_platform_compatible_process, stdio_client
+from mcp.shared.exceptions import McpError
+from mcp.shared.message import SessionMessage
+from mcp.types import CONNECTION_CLOSED, JSONRPCMessage, JSONRPCRequest, JSONRPCResponse
 from ..shared.test_win32_utils import escape_path_for_python
 
 from ..shared.test_win32_utils import escape_path_for_python
@@ -317,7 +317,7 @@ class TestChildProcessCleanup:
 
             # Terminate using our function
             print("Terminating process and children...")
-            from mcp_grpc.client.stdio import _terminate_process_tree
+            from mcp.client.stdio import _terminate_process_tree
 
             await _terminate_process_tree(proc)
 
@@ -418,7 +418,7 @@ class TestChildProcessCleanup:
                     assert new_size > initial_size, f"{name} process should be writing"
 
             # Terminate the whole tree
-            from mcp_grpc.client.stdio import _terminate_process_tree
+            from mcp.client.stdio import _terminate_process_tree
 
             await _terminate_process_tree(proc)
 
@@ -499,7 +499,7 @@ class TestChildProcessCleanup:
                 assert size2 > size1, "Child should be writing"
 
             # Terminate - this will kill the process group even if parent exits first
-            from mcp_grpc.client.stdio import _terminate_process_tree
+            from mcp.client.stdio import _terminate_process_tree
 
             await _terminate_process_tree(proc)
 

@@ -1,8 +1,8 @@
 import time
 from typing import Any
 
-from mcp_grpc.server.auth.provider import OAuthAuthorizationServerProvider
-from mcp_grpc.shared.auth import OAuthClientInformationFull
+from mcp.server.auth.provider import OAuthAuthorizationServerProvider
+from mcp.shared.auth import OAuthClientInformationFull
 
 
 class AuthenticationError(Exception):

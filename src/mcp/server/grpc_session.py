@@ -6,9 +6,9 @@ from typing import Any
 
 from pydantic import AnyUrl
 
-import mcp_grpc.types as types
-from mcp_grpc.proto import mcp_pb2
-from mcp_grpc.server.transport_session import TransportSession
+import mcp.types as types
+from mcp.proto import mcp_pb2
+from mcp.server.transport_session import TransportSession
 
 logger = logging.getLogger(__name__)
 

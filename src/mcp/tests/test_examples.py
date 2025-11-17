@@ -10,14 +10,14 @@ import sys
 import pytest
 from pytest_examples import CodeExample, EvalExample, find_examples
 
-from mcp_grpc.shared.memory import create_connected_server_and_client_session as client_session
-from mcp_grpc.types import TextContent, TextResourceContents
+from mcp.shared.memory import create_connected_server_and_client_session as client_session
+from mcp.types import TextContent, TextResourceContents
 
 
 @pytest.mark.anyio
 async def test_simple_echo():
     """Test the simple echo server"""
-    from examples.fastmcp.simple_echo import mcp_grpc
+    from examples.fastmcp.simple_echo import mcp
 
     async with client_session(mcp._mcp_server) as client:
         result = await client.call_tool("echo", {"text": "hello"})
@@ -30,7 +30,7 @@ async def test_simple_echo():
 @pytest.mark.anyio
 async def test_complex_inputs():
     """Test the complex inputs server"""
-    from examples.fastmcp.complex_inputs import mcp_grpc
+    from examples.fastmcp.complex_inputs import mcp
 
     async with client_session(mcp._mcp_server) as client:
         tank = {"shrimp": [{"name": "bob"}, {"name": "alice"}]}
@@ -51,7 +51,7 @@ async def test_desktop(monkeypatch: pytest.MonkeyPatch):
 
     from pydantic import AnyUrl
 
-    from examples.fastmcp.desktop import mcp_grpc
+    from examples.fastmcp.desktop import mcp
 
     # Mock desktop directory listing
     mock_files = [Path("/fake/path/file1.txt"), Path("/fake/path/file2.txt")]

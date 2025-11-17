@@ -6,10 +6,10 @@ from typing import Any
 import anyio
 import pytest
 
-from mcp_grpc.server.models import InitializationOptions
-from mcp_grpc.server.session import ServerSession
-from mcp_grpc.shared.message import SessionMessage
-from mcp_grpc.types import (
+from mcp.server.models import InitializationOptions
+from mcp.server.session import ServerSession
+from mcp.shared.message import SessionMessage
+from mcp.types import (
     INVALID_PARAMS,
     JSONRPCError,
     JSONRPCMessage,

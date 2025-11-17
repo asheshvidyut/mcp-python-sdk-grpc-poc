@@ -12,13 +12,13 @@ import pytest
 from pydantic import BaseModel
 from google.protobuf import json_format
 from google3.google.protobuf import struct_pb2
-from mcp_grpc import types
-from mcp_grpc.client.grpc_transport_session import GRPCTransportSession
-from mcp_grpc.proto import mcp_pb2, mcp_pb2_grpc
-from mcp_grpc.server.fastmcp.server import FastMCP
-from mcp_grpc.server.grpc import create_mcp_grpc_server
-from mcp_grpc.shared.exceptions import McpError
-from mcp_grpc.shared import version
+from mcp import types
+from mcp.client.grpc_transport_session import GRPCTransportSession
+from mcp.proto import mcp_pb2, mcp_pb2_grpc
+from mcp.server.fastmcp.server import FastMCP
+from mcp.server.grpc import create_mcp_server
+from mcp.shared.exceptions import McpError
+from mcp.shared import version
 
 
 def setup_test_server(port: int, test_dir: Path) -> FastMCP:
@@ -145,7 +145,7 @@ async def grpc_server(server_port: int, tmp_path: Path) -> Generator[None, None,
     (test_dir / "readme.md").write_text("# Test Readme")
     (test_dir / "config.json").write_text('{"test": "value"}')
     server_instance = setup_test_server(server_port, test_dir)
-    server = await create_mcp_grpc_server(
+    server = await create_mcp_server(
         target=f"127.0.0.1:{server_port}", mcp_server=server_instance
     )
 
@@ -573,7 +573,7 @@ def failing_server_port() -> int:
 async def failing_grpc_server(failing_server_port: int) -> Generator[None, None, None]:
     """Start a gRPC server in process that fails on list_tools."""
     server_instance = setup_failing_test_server(failing_server_port)
-    server = await create_mcp_grpc_server(
+    server = await create_mcp_server(
         target=f"127.0.0.1:{failing_server_port}", mcp_server=server_instance
     )
 
@@ -587,7 +587,7 @@ async def failing_grpc_server_for_resources(
 ) -> Generator[None, None, None]:
     """Start a gRPC server in process that fails on list_resources."""
     server_instance = setup_failing_test_server_for_resources(failing_server_port)
-    server = await create_mcp_grpc_server(
+    server = await create_mcp_server(
         target=f"127.0.0.1:{failing_server_port}", mcp_server=server_instance
     )
 
@@ -603,7 +603,7 @@ async def failing_grpc_server_for_resource_templates(
     server_instance = setup_failing_test_server_for_resource_templates(
         failing_server_port
     )
-    server = await create_mcp_grpc_server(
+    server = await create_mcp_server(
         target=f"127.0.0.1:{failing_server_port}", mcp_server=server_instance
     )
 
@@ -648,7 +648,7 @@ async def test_list_resources_grpc_parse_error(
     )
     metadata = [("mcp-protocol-version", version.LATEST_PROTOCOL_VERSION)]
     with unittest.mock.patch(
-        "mcp_grpc.server.grpc.convert.resource_types_to_protos",
+        "mcp.server.grpc.convert.resource_types_to_protos",
         side_effect=json_format.ParseError("Intentional ParseError"),
     ):
         with pytest.raises(grpc.aio.AioRpcError) as excinfo:
@@ -688,7 +688,7 @@ async def test_list_resource_templates_grpc_parse_error(
     )
     metadata = [("mcp-protocol-version", version.LATEST_PROTOCOL_VERSION)]
     with unittest.mock.patch(
-        "mcp_grpc.server.grpc.convert.resource_template_types_to_protos",
+        "mcp.server.grpc.convert.resource_template_types_to_protos",
         side_effect=json_format.ParseError("Intentional ParseError"),
     ):
         with pytest.raises(grpc.aio.AioRpcError) as excinfo:

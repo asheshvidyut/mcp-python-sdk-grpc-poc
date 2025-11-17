@@ -5,10 +5,10 @@ load("//third_party/protobuf/bazel:cc_proto_library.bzl", "cc_proto_library")
 load("//third_party/protobuf/bazel:proto_library.bzl", "proto_library")
 
 package(
-    default_applicable_licenses = ["//third_party/py/mcp_grpc:license"],
+    default_applicable_licenses = ["//third_party/py/mcp:license"],
     default_visibility = [
         "//third_party/mcp_cpp:__subpackages__",
-        "//third_party/py/mcp_grpc:__subpackages__",
+        "//third_party/py/mcp:__subpackages__",
     ],
 )
 

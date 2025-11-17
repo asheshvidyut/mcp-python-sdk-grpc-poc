@@ -3,11 +3,11 @@ from unittest import mock
 
 import pytest
 
-import mcp_grpc
-from mcp_grpc import types
-from mcp_grpc.client.session_group import ClientSessionGroup, SseServerParameters, StreamableHttpParameters
-from mcp_grpc.client.stdio import StdioServerParameters
-from mcp_grpc.shared.exceptions import McpError
+import mcp
+from mcp import types
+from mcp.client.session_group import ClientSessionGroup, SseServerParameters, StreamableHttpParameters
+from mcp.client.stdio import StdioServerParameters
+from mcp.shared.exceptions import McpError
 
 
 @pytest.fixture
@@ -80,7 +80,7 @@ class TestClientSessionGroup:
         # --- Mock Dependencies ---
         mock_server_info = mock.Mock(spec=types.Implementation)
         mock_server_info.name = "TestServer1"
-        mock_session = mock.AsyncMock(spec=mcp_grpc.ClientSession)
+        mock_session = mock.AsyncMock(spec=mcp.ClientSession)
         mock_tool1 = mock.Mock(spec=types.Tool)
         mock_tool1.name = "tool_a"
         mock_resource1 = mock.Mock(spec=types.Resource)
@@ -117,7 +117,7 @@ class TestClientSessionGroup:
         # --- Mock Dependencies ---
         mock_server_info = mock.Mock(spec=types.Implementation)
         mock_server_info.name = "HookServer"
-        mock_session = mock.AsyncMock(spec=mcp_grpc.ClientSession)
+        mock_session = mock.AsyncMock(spec=mcp.ClientSession)
         mock_tool = mock.Mock(spec=types.Tool)
         mock_tool.name = "base_tool"
         mock_session.list_tools.return_value = mock.AsyncMock(tools=[mock_tool])
@@ -148,8 +148,8 @@ class TestClientSessionGroup:
         server_name = "ServerToDisconnect"
 
         # Manually populate state using standard mocks
-        mock_session1 = mock.MagicMock(spec=mcp_grpc.ClientSession)
-        mock_session2 = mock.MagicMock(spec=mcp_grpc.ClientSession)
+        mock_session1 = mock.MagicMock(spec=mcp.ClientSession)
+        mock_session2 = mock.MagicMock(spec=mcp.ClientSession)
         mock_tool1 = mock.Mock(spec=types.Tool)
         mock_tool1.name = "tool1"
         mock_resource1 = mock.Mock(spec=types.Resource)
@@ -159,7 +159,7 @@ class TestClientSessionGroup:
         mock_tool2 = mock.Mock(spec=types.Tool)
         mock_tool2.name = "tool2"
         mock_component_named_like_server = mock.Mock()
-        mock_session = mock.Mock(spec=mcp_grpc.ClientSession)
+        mock_session = mock.Mock(spec=mcp.ClientSession)
 
         group._tools = {
             "tool1": mock_tool1,
@@ -213,14 +213,14 @@ class TestClientSessionGroup:
         group._tools[existing_tool_name] = mock.Mock(spec=types.Tool)
         group._tools[existing_tool_name].name = existing_tool_name
         # Need a dummy session associated with the existing tool
-        mock_session = mock.MagicMock(spec=mcp_grpc.ClientSession)
+        mock_session = mock.MagicMock(spec=mcp.ClientSession)
         group._tool_to_session[existing_tool_name] = mock_session
         group._session_exit_stacks[mock_session] = mock.Mock(spec=contextlib.AsyncExitStack)
 
         # --- Mock New Connection Attempt ---
         mock_server_info_new = mock.Mock(spec=types.Implementation)
         mock_server_info_new.name = "ServerWithDuplicate"
-        mock_session_new = mock.AsyncMock(spec=mcp_grpc.ClientSession)
+        mock_session_new = mock.AsyncMock(spec=mcp.ClientSession)
 
         # Configure the new session to return a tool with the *same name*
         duplicate_tool = mock.Mock(spec=types.Tool)
@@ -251,7 +251,7 @@ class TestClientSessionGroup:
     # No patching needed here
     async def test_disconnect_non_existent_server(self):
         """Test disconnecting a server that isn't connected."""
-        session = mock.Mock(spec=mcp_grpc.ClientSession)
+        session = mock.Mock(spec=mcp.ClientSession)
         group = ClientSessionGroup()
         with pytest.raises(McpError):
             await group.disconnect_from_server(session)
@@ -262,17 +262,17 @@ class TestClientSessionGroup:
             (
                 StdioServerParameters(command="test_stdio_cmd"),
                 "stdio",
-                "mcp_grpc.client.session_group.mcp_grpc.stdio_client",
+                "mcp.client.session_group.mcp.stdio_client",
             ),
             (
                 SseServerParameters(url="http://test.com/sse", timeout=10),
                 "sse",
-                "mcp_grpc.client.session_group.sse_client",
+                "mcp.client.session_group.sse_client",
             ),  # url, headers, timeout, sse_read_timeout
             (
                 StreamableHttpParameters(url="http://test.com/stream", terminate_on_close=False),
                 "streamablehttp",
-                "mcp_grpc.client.session_group.streamablehttp_client",
+                "mcp.client.session_group.streamablehttp_client",
             ),  # url, headers, timeout, sse_read_timeout, terminate_on_close
         ],
     )
@@ -282,7 +282,7 @@ class TestClientSessionGroup:
         client_type_name: str,  # Just for clarity or conditional logic if needed
         patch_target_for_client_func: str,
     ):
-        with mock.patch("mcp_grpc.client.session_group.mcp_grpc.ClientSession") as mock_ClientSession_class:
+        with mock.patch("mcp.client.session_group.mcp.ClientSession") as mock_ClientSession_class:
             with mock.patch(patch_target_for_client_func) as mock_specific_client_func:
                 mock_client_cm_instance = mock.AsyncMock(name=f"{client_type_name}ClientCM")
                 mock_read_stream = mock.AsyncMock(name=f"{client_type_name}Read")
@@ -305,7 +305,7 @@ class TestClientSessionGroup:
                 mock_client_cm_instance.__aexit__ = mock.AsyncMock(return_value=None)
                 mock_specific_client_func.return_value = mock_client_cm_instance
 
-                # --- Mock mcp_grpc.ClientSession (class) ---
+                # --- Mock mcp.ClientSession (class) ---
                 # mock_ClientSession_class is already provided by the outer patch
                 mock_raw_session_cm = mock.AsyncMock(name="RawSessionCM")
                 mock_ClientSession_class.return_value = mock_raw_session_cm

@@ -8,14 +8,14 @@ from typing import TYPE_CHECKING, Any, get_origin
 
 from pydantic import BaseModel, Field
 
-from mcp_grpc.server.fastmcp.exceptions import ToolError
-from mcp_grpc.server.fastmcp.utilities.func_metadata import FuncMetadata, func_metadata
-from mcp_grpc.types import ToolAnnotations
+from mcp.server.fastmcp.exceptions import ToolError
+from mcp.server.fastmcp.utilities.func_metadata import FuncMetadata, func_metadata
+from mcp.types import ToolAnnotations
 
 if TYPE_CHECKING:
-    from mcp_grpc.server.fastmcp.server import Context
-    from mcp_grpc.server.session import ServerSessionT
-    from mcp_grpc.shared.context import LifespanContextT, RequestT
+    from mcp.server.fastmcp.server import Context
+    from mcp.server.session import ServerSessionT
+    from mcp.shared.context import LifespanContextT, RequestT
 
 
 class Tool(BaseModel):
@@ -49,7 +49,7 @@ class Tool(BaseModel):
         structured_output: bool | None = None,
     ) -> Tool:
         """Create a Tool from a function."""
-        from mcp_grpc.server.fastmcp.server import Context
+        from mcp.server.fastmcp.server import Context
 
         func_name = name or fn.__name__
 

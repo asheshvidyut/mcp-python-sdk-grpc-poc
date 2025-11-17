@@ -9,10 +9,10 @@ from google.protobuf import json_format
 from google3.google.protobuf import duration_pb2
 from google3.google.protobuf.struct_pb2 import Struct
 
-from mcp_grpc.shared import convert
-from mcp_grpc.shared.exceptions import McpError
-from mcp_grpc import types
-from mcp_grpc.proto import mcp_pb2
+from mcp.shared import convert
+from mcp.shared.exceptions import McpError
+from mcp import types
+from mcp.proto import mcp_pb2
 
 
 def test_ttl_from_timedelta():

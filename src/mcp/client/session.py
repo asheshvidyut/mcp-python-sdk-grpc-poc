@@ -14,14 +14,14 @@ from mcp.client.session_common import ListRootsFnT
 from mcp.client.session_common import LoggingFnT
 from mcp.client.session_common import MessageHandlerFnT
 from mcp.client.session_common import SamplingFnT
-from mcp_grpc.client.transport_session import TransportSession
-from mcp_grpc.shared.context import RequestContext
-from mcp_grpc.shared.message import SessionMessage
-from mcp_grpc.shared.session import BaseSession
-from mcp_grpc.shared.session import ProgressFnT
-from mcp_grpc.shared.session import RequestResponder
-from mcp_grpc.shared.version import SUPPORTED_PROTOCOL_VERSIONS
-import mcp_grpc.types as types
+from mcp.client.transport_session import TransportSession
+from mcp.shared.context import RequestContext
+from mcp.shared.message import SessionMessage
+from mcp.shared.session import BaseSession
+from mcp.shared.session import ProgressFnT
+from mcp.shared.session import RequestResponder
+from mcp.shared.version import SUPPORTED_PROTOCOL_VERSIONS
+import mcp.types as types
 from pydantic import AnyUrl
 from pydantic import TypeAdapter
 

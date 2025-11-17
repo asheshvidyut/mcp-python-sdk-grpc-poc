@@ -15,9 +15,9 @@ from typing import cast
 import pytest
 from pydantic import AnyUrl
 
-from mcp_grpc.server.lowlevel.helper_types import ReadResourceContents
-from mcp_grpc.server.lowlevel.server import Server
-from mcp_grpc.types import (
+from mcp.server.lowlevel.helper_types import ReadResourceContents
+from mcp.server.lowlevel.server import Server
+from mcp.types import (
     BlobResourceContents,
     ReadResourceRequest,
     ReadResourceRequestParams,

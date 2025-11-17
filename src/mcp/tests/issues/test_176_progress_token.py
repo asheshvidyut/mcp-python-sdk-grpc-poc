@@ -2,8 +2,8 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from mcp_grpc.server.fastmcp import Context
-from mcp_grpc.shared.context import RequestContext
+from mcp.server.fastmcp import Context
+from mcp.shared.context import RequestContext
 
 pytestmark = pytest.mark.anyio
 

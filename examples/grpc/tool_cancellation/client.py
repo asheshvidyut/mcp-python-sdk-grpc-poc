@@ -4,9 +4,9 @@ import asyncio
 
 from absl import app
 from absl import flags
-import mcp_grpc
-from mcp_grpc import types
-from mcp_grpc.client import grpc_transport_session
+import mcp
+from mcp import types
+from mcp.client import grpc_transport_session
 
 _SERVER_HOST = flags.DEFINE_string("server_host", "localhost", "Server host")
 _SERVER_PORT = flags.DEFINE_integer("server_port", 50051, "Server port")
@@ -47,7 +47,7 @@ async def call_server(host: str, port: int):
     try:
       result1 = await call_tool_task1
       print(f"Tool call 1 unexpected result: {result1}")
-    except mcp_grpc.McpError as e:
+    except mcp.McpError as e:
       if e.error.code == types.REQUEST_CANCELLED:
         print("✅ Received expected cancellation for slow_tool:")
         print(f"   {e.error}")
@@ -63,14 +63,14 @@ async def call_server(host: str, port: int):
           session.call_tool("slow_tool", {}), timeout=15
       )
       print(f"✅ Received slow_tool response:\n   Message: {result2}")
-    except mcp_grpc.McpError as e:
+    except mcp.McpError as e:
       print(f"❌ slow_tool failed unexpectedly: {e}")
     except asyncio.TimeoutError:
       print("❌ slow_tool timed out.")
 
     print("========================================")
 
-  except mcp_grpc.McpError as e:
+  except mcp.McpError as e:
     print(f"An error occurred: {e}")
   finally:
     await session.close()

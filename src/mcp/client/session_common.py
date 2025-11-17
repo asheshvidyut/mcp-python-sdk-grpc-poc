@@ -1,7 +1,7 @@
 from typing import Any, Protocol
-import mcp_grpc.types as types
-from mcp_grpc.shared.context import RequestContext
-from mcp_grpc.shared.session import RequestResponder
+import mcp.types as types
+from mcp.shared.context import RequestContext
+from mcp.shared.session import RequestResponder
 from jsonschema import ValidationError, SchemaError
 from jsonschema.validators import validate
 

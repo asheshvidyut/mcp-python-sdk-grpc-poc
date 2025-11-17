@@ -6,9 +6,9 @@ from unittest.mock import patch
 import pytest
 from anyio.streams.memory import MemoryObjectSendStream
 
-import mcp_grpc.shared.memory
-from mcp_grpc.shared.message import SessionMessage
-from mcp_grpc.types import JSONRPCNotification, JSONRPCRequest
+import mcp.shared.memory
+from mcp.shared.message import SessionMessage
+from mcp.types import JSONRPCNotification, JSONRPCRequest
 
 
 class SpyMemoryObjectSendStream:
@@ -105,7 +105,7 @@ def stream_spy() -> Generator[Callable[[], StreamSpyCollection], None, None]:
         server_spy = s_spy
 
     # Create patched version of stream creation
-    original_create_streams = mcp_grpc.shared.memory.create_client_server_memory_streams
+    original_create_streams = mcp.shared.memory.create_client_server_memory_streams
 
     @asynccontextmanager
     async def patched_create_streams():
@@ -123,7 +123,7 @@ def stream_spy() -> Generator[Callable[[], StreamSpyCollection], None, None]:
             yield (client_read, spy_client_write), (server_read, spy_server_write)
 
     # Apply the patch for the duration of the test
-    with patch("mcp_grpc.shared.memory.create_client_server_memory_streams", patched_create_streams):
+    with patch("mcp.shared.memory.create_client_server_memory_streams", patched_create_streams):
         # Return a collection with helper methods
         def get_spy_collection() -> StreamSpyCollection:
             assert client_spy is not None, "client_spy was not initialized"

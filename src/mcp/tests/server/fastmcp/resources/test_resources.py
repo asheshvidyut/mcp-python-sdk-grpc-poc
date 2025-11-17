@@ -1,7 +1,7 @@
 import pytest
 from pydantic import AnyUrl
 
-from mcp_grpc.server.fastmcp.resources import FunctionResource, Resource
+from mcp.server.fastmcp.resources import FunctionResource, Resource
 
 
 class TestResourceValidation:

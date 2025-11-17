@@ -16,14 +16,14 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Mount, Route
 
-import mcp_grpc.types as types
-from mcp_grpc.client.session import ClientSession
-from mcp_grpc.client.sse import sse_client
-from mcp_grpc.server import Server
-from mcp_grpc.server.sse import SseServerTransport
-from mcp_grpc.server.transport_security import TransportSecuritySettings
-from mcp_grpc.shared.exceptions import McpError
-from mcp_grpc.types import (
+import mcp.types as types
+from mcp.client.session import ClientSession
+from mcp.client.sse import sse_client
+from mcp.server import Server
+from mcp.server.sse import SseServerTransport
+from mcp.server.transport_security import TransportSecuritySettings
+from mcp.shared.exceptions import McpError
+from mcp.types import (
     EmptyResult,
     ErrorData,
     InitializeResult,

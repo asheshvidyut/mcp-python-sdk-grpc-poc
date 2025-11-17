@@ -5,9 +5,9 @@ import asyncio
 from absl import app
 from absl import flags
 import grpc
-import mcp_grpc
-from mcp_grpc.client import grpc_transport_session
-from mcp_grpc.examples.grpc.auth import _credentials
+import mcp
+from mcp.client import grpc_transport_session
+from mcp.examples.grpc.auth import _credentials
 
 
 _SERVER_HOST = flags.DEFINE_string("server_host", "localhost", "Server host")
@@ -34,7 +34,7 @@ async def call_server(host, port):
     print(f"Result: {result}")
     print("--------------------------------------------\n")
 
-  except mcp_grpc.McpError as e:
+  except mcp.McpError as e:
     print(f"An error occurred: {e}")
   finally:
     await session.close()

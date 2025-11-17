@@ -19,10 +19,10 @@ from pydantic.fields import FieldInfo
 from pydantic.json_schema import GenerateJsonSchema, JsonSchemaWarningKind
 from pydantic_core import PydanticUndefined
 
-from mcp_grpc.server.fastmcp.exceptions import InvalidSignature
-from mcp_grpc.server.fastmcp.utilities.logging import get_logger
-from mcp_grpc.server.fastmcp.utilities.types import Image
-from mcp_grpc.types import ContentBlock, TextContent
+from mcp.server.fastmcp.exceptions import InvalidSignature
+from mcp.server.fastmcp.utilities.logging import get_logger
+from mcp.server.fastmcp.utilities.types import Image
+from mcp.types import ContentBlock, TextContent
 
 logger = get_logger(__name__)
 

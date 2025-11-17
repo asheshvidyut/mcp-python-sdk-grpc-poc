@@ -9,8 +9,8 @@ from typing import Annotated, TypedDict
 from absl import app
 from absl import flags
 from absl import logging
-from mcp_grpc.server import fastmcp
-from mcp_grpc.server import session
+from mcp.server import fastmcp
+from mcp.server import session
 from PIL import Image as PILImage
 import pydantic
 

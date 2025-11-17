@@ -5,8 +5,8 @@ import datetime
 
 from absl import app
 from absl import flags
-import mcp_grpc
-from mcp_grpc.client import grpc_transport_session
+import mcp
+from mcp.client import grpc_transport_session
 
 _SERVER_HOST = flags.DEFINE_string("server_host", "localhost", "Server host")
 _SERVER_PORT = flags.DEFINE_integer("server_port", 50051, "Server port")
@@ -134,11 +134,11 @@ async def call_server(host, port):
           read_timeout_seconds=datetime.timedelta(seconds=1)
       )
       print(f"Result: {result}")
-    except mcp_grpc.McpError as e:
+    except mcp.McpError as e:
       print(f"Caught expected timeout error: {e}")
       print(f"Error code: {e.error.code}")
     print("-------------------------------------------\n")
-  except mcp_grpc.McpError as e:
+  except mcp.McpError as e:
     print(f"An error occurred: {e}")
   finally:
     await session.close()

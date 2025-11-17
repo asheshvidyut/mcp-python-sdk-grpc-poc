@@ -9,14 +9,14 @@ from starlette.responses import RedirectResponse, Response
 
 from mcp.server.auth.errors import stringify_pydantic_error
 from mcp.server.auth.json_response import PydanticJSONResponse
-from mcp_grpc.server.auth.provider import (
+from mcp.server.auth.provider import (
     AuthorizationErrorCode,
     AuthorizationParams,
     AuthorizeError,
     OAuthAuthorizationServerProvider,
     construct_redirect_uri,
 )
-from mcp_grpc.shared.auth import InvalidRedirectUriError, InvalidScopeError
+from mcp.shared.auth import InvalidRedirectUriError, InvalidScopeError
 
 logger = logging.getLogger(__name__)
 

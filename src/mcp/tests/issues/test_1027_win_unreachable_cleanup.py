@@ -17,8 +17,8 @@ from typing import TYPE_CHECKING
 import anyio
 import pytest
 
-from mcp_grpc import ClientSession, StdioServerParameters
-from mcp_grpc.client.stdio import _create_platform_compatible_process, stdio_client
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import _create_platform_compatible_process, stdio_client
 
 from ..shared.test_win32_utils import escape_path_for_python
 
@@ -58,7 +58,7 @@ async def test_lifespan_cleanup_executed():
         import sys
         from pathlib import Path
         from contextlib import asynccontextmanager
-        from mcp_grpc.server.fastmcp import FastMCP
+        from mcp.server.fastmcp import FastMCP
         STARTUP_MARKER = {escape_path_for_python(startup_marker)}
         CLEANUP_MARKER = {escape_path_for_python(cleanup_marker)}
 
@@ -165,7 +165,7 @@ async def test_stdin_close_triggers_cleanup():
         import sys
         from pathlib import Path
         from contextlib import asynccontextmanager
-        from mcp_grpc.server.fastmcp import FastMCP
+        from mcp.server.fastmcp import FastMCP
         STARTUP_MARKER = {escape_path_for_python(startup_marker)}
         CLEANUP_MARKER = {escape_path_for_python(cleanup_marker)}
 

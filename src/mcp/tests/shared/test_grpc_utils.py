@@ -1,8 +1,8 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 import grpc
-from mcp_grpc.shared import grpc_utils
-from mcp_grpc.shared import version
+from mcp.shared import grpc_utils
+from mcp.shared import version
 
 @pytest.fixture
 def mock_context():

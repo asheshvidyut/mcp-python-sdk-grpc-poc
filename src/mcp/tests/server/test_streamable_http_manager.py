@@ -7,10 +7,10 @@ import anyio
 import pytest
 from starlette.types import Message
 
-from mcp_grpc.server import streamable_http_manager
-from mcp_grpc.server.lowlevel import Server
-from mcp_grpc.server.streamable_http import MCP_SESSION_ID_HEADER, StreamableHTTPServerTransport
-from mcp_grpc.server.streamable_http_manager import StreamableHTTPSessionManager
+from mcp.server import streamable_http_manager
+from mcp.server.lowlevel import Server
+from mcp.server.streamable_http import MCP_SESSION_ID_HEADER, StreamableHTTPServerTransport
+from mcp.server.streamable_http_manager import StreamableHTTPSessionManager
 
 
 @pytest.mark.anyio

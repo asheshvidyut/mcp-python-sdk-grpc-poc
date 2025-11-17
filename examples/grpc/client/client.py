@@ -7,9 +7,9 @@ using the MCPClient class pattern with gRPC transport.
 
 import logging
 from datetime import timedelta
-from mcp_grpc.client.grpc_transport_session import GRPCTransportSession
-from mcp_grpc.types import CallToolRequestParams
-from mcp_grpc import McpError
+from mcp.client.grpc_transport_session import GRPCTransportSession
+from mcp.types import CallToolRequestParams
+from mcp import McpError
 import asyncio
 import argparse
 

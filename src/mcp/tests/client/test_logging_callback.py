@@ -2,12 +2,12 @@ from typing import Literal
 
 import pytest
 
-import mcp_grpc.types as types
-from mcp_grpc.shared.memory import (
+import mcp.types as types
+from mcp.shared.memory import (
     create_connected_server_and_client_session as create_session,
 )
-from mcp_grpc.shared.session import RequestResponder
-from mcp_grpc.types import (
+from mcp.shared.session import RequestResponder
+from mcp.types import (
     LoggingMessageNotificationParams,
     TextContent,
 )
@@ -23,7 +23,7 @@ class LoggingCollector:
 
 @pytest.mark.anyio
 async def test_logging_callback():
-    from mcp_grpc.server.fastmcp import FastMCP
+    from mcp.server.fastmcp import FastMCP
 
     server = FastMCP("test")
     logging_collector = LoggingCollector()

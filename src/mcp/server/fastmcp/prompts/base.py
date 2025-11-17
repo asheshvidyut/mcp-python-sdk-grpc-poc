@@ -7,7 +7,7 @@ from typing import Any, Literal
 import pydantic_core
 from pydantic import BaseModel, Field, TypeAdapter, validate_call
 
-from mcp_grpc.types import ContentBlock, TextContent
+from mcp.types import ContentBlock, TextContent
 
 
 class Message(BaseModel):

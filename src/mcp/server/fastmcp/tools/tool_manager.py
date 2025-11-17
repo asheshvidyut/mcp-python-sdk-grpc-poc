@@ -3,15 +3,15 @@ from __future__ import annotations as _annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
-from mcp_grpc.server.fastmcp.exceptions import ToolError
-from mcp_grpc.server.fastmcp.tools.base import Tool
-from mcp_grpc.server.fastmcp.utilities.logging import get_logger
-from mcp_grpc.shared.context import LifespanContextT, RequestT
-from mcp_grpc.types import ToolAnnotations
+from mcp.server.fastmcp.exceptions import ToolError
+from mcp.server.fastmcp.tools.base import Tool
+from mcp.server.fastmcp.utilities.logging import get_logger
+from mcp.shared.context import LifespanContextT, RequestT
+from mcp.types import ToolAnnotations
 
 if TYPE_CHECKING:
-    from mcp_grpc.server.fastmcp.server import Context
-    from mcp_grpc.server.session import ServerSessionT
+    from mcp.server.fastmcp.server import Context
+    from mcp.server.session import ServerSessionT
 
 logger = get_logger(__name__)
 

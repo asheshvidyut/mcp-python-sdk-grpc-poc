@@ -10,12 +10,12 @@ import pytest
 from anyio.abc import TaskStatus
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 
-from mcp_grpc import types
-from mcp_grpc.client.session import ClientSession
-from mcp_grpc.server.lowlevel import Server
-from mcp_grpc.shared.exceptions import McpError
-from mcp_grpc.shared.message import SessionMessage
-from mcp_grpc.types import ContentBlock, TextContent
+from mcp import types
+from mcp.client.session import ClientSession
+from mcp.server.lowlevel import Server
+from mcp.shared.exceptions import McpError
+from mcp.shared.message import SessionMessage
+from mcp.types import ContentBlock, TextContent
 
 
 @pytest.mark.anyio

@@ -10,12 +10,12 @@ from typing import Any, Sequence, cast, Iterable, TypeAlias
 import jsonschema
 from google.protobuf import json_format
 from google.protobuf.message import Message
-from mcp_grpc.server.lowlevel.helper_types import ReadResourceContents
+from mcp.server.lowlevel.helper_types import ReadResourceContents
 
-from mcp_grpc import types
-from mcp_grpc.types import ErrorData
-from mcp_grpc.shared.exceptions import McpError
-from mcp_grpc.proto import mcp_pb2
+from mcp import types
+from mcp.types import ErrorData
+from mcp.shared.exceptions import McpError
+from mcp.proto import mcp_pb2
 from google3.google.protobuf import duration_pb2
 from google3.google.protobuf import struct_pb2
 

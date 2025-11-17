@@ -7,7 +7,7 @@ import asyncio
 import grpc
 from grpc import aio
 
-from mcp_grpc.server.fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP
 
 def setup_server(port: int) -> FastMCP:
   """Set up the FastMCP server with comprehensive features."""

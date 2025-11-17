@@ -4,7 +4,7 @@ from typing import Literal
 from absl import app
 from absl import flags
 from absl import logging
-from mcp_grpc.server import fastmcp
+from mcp.server import fastmcp
 import pydantic
 
 _PORT = flags.DEFINE_integer("port", 50051, "Server port")

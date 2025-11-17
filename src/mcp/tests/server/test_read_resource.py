@@ -5,8 +5,8 @@ from tempfile import NamedTemporaryFile
 import pytest
 from pydantic import AnyUrl, FileUrl
 
-import mcp_grpc.types as types
-from mcp_grpc.server.lowlevel.server import ReadResourceContents, Server
+import mcp.types as types
+from mcp.server.lowlevel.server import ReadResourceContents, Server
 
 
 @pytest.fixture

@@ -5,9 +5,9 @@ from typing import Any
 
 from pydantic import AnyUrl
 
-from mcp_grpc.server.fastmcp.resources.base import Resource
-from mcp_grpc.server.fastmcp.resources.templates import ResourceTemplate
-from mcp_grpc.server.fastmcp.utilities.logging import get_logger
+from mcp.server.fastmcp.resources.base import Resource
+from mcp.server.fastmcp.resources.templates import ResourceTemplate
+from mcp.server.fastmcp.utilities.logging import get_logger
 
 logger = get_logger(__name__)
 

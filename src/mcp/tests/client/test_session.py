@@ -3,13 +3,13 @@ from typing import Any
 import anyio
 import pytest
 
-import mcp_grpc.types as types
-from mcp_grpc.client.session import DEFAULT_CLIENT_INFO, ClientSession, TransportSession
-from mcp_grpc.shared.context import RequestContext
-from mcp_grpc.shared.message import SessionMessage
-from mcp_grpc.shared.session import RequestResponder
-from mcp_grpc.shared.version import SUPPORTED_PROTOCOL_VERSIONS
-from mcp_grpc.types import (
+import mcp.types as types
+from mcp.client.session import DEFAULT_CLIENT_INFO, ClientSession, TransportSession
+from mcp.shared.context import RequestContext
+from mcp.shared.message import SessionMessage
+from mcp.shared.session import RequestResponder
+from mcp.shared.version import SUPPORTED_PROTOCOL_VERSIONS
+from mcp.types import (
     LATEST_PROTOCOL_VERSION,
     ClientNotification,
     ClientRequest,

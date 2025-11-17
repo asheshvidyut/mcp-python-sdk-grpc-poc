@@ -17,15 +17,15 @@ from typing import Annotated, TypedDict, Any
 
 import asyncio
 from pathlib import Path
-from mcp_grpc.server.fastmcp import Context, FastMCP
-from mcp_grpc.server.session import ServerSession
+from mcp.server.fastmcp import Context, FastMCP
+from mcp.server.session import ServerSession
 from pydantic import BaseModel, Field
 import base64
 from io import BytesIO
 from PIL import Image as PILImage
-from mcp_grpc import types
-from mcp_grpc.server.fastmcp.utilities.types import Image
-from mcp_grpc.server.fastmcp.utilities.types import Image
+from mcp import types
+from mcp.server.fastmcp.utilities.types import Image
+from mcp.server.fastmcp.utilities.types import Image
 
 
 class ShrimpTank(BaseModel):

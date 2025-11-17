@@ -4,8 +4,8 @@ import asyncio
 
 from absl import app
 from absl import flags
-import mcp_grpc
-from mcp_grpc.client import grpc_transport_session
+import mcp
+from mcp.client import grpc_transport_session
 
 _SERVER_HOST = flags.DEFINE_string("server_host", "localhost", "Server host")
 _SERVER_PORT = flags.DEFINE_integer("server_port", 50051, "Server port")
@@ -36,7 +36,7 @@ async def call_server(host: str, port: int, name: str):
       # Currently tool not found error returns
       #  as a text response with is_error true.(for python sdk)
       print(f"❌  Received tool response:\n   {result}")
-    except mcp_grpc.McpError as e:
+    except mcp.McpError as e:
       print(f"❌ Received failure response for non-existent tool:\n   {e}")
 
     print("\n========================================")
@@ -49,7 +49,7 @@ async def call_server(host: str, port: int, name: str):
     print(f"✅ Received tool response:\n   {result}")
     print("========================================")
 
-  except mcp_grpc.McpError as e:
+  except mcp.McpError as e:
     print(f"An error occurred: {e}")
   finally:
     await session.close()

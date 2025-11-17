@@ -2,7 +2,7 @@
 
 import httpx
 
-from mcp_grpc.shared._httpx_utils import create_mcp_http_client
+from mcp.shared._httpx_utils import create_mcp_http_client
 
 
 def test_default_settings():

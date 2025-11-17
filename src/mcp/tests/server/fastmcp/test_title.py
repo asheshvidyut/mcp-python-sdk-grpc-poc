@@ -3,11 +3,11 @@
 import pytest
 from pydantic import AnyUrl
 
-from mcp_grpc.server.fastmcp import FastMCP
-from mcp_grpc.server.fastmcp.resources import FunctionResource
-from mcp_grpc.shared.memory import create_connected_server_and_client_session
-from mcp_grpc.shared.metadata_utils import get_display_name
-from mcp_grpc.types import Prompt, Resource, ResourceTemplate, Tool, ToolAnnotations
+from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp.resources import FunctionResource
+from mcp.shared.memory import create_connected_server_and_client_session
+from mcp.shared.metadata_utils import get_display_name
+from mcp.types import Prompt, Resource, ResourceTemplate, Tool, ToolAnnotations
 
 
 @pytest.mark.anyio
