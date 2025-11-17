@@ -26,6 +26,7 @@ if TYPE_CHECKING:
 else:
     from tests.shared.test_win32_utils import escape_path_for_python
 
+
 @pytest.mark.anyio
 async def test_lifespan_cleanup_executed():
     """
@@ -57,6 +58,7 @@ async def test_lifespan_cleanup_executed():
         from pathlib import Path
         from contextlib import asynccontextmanager
         from mcp.server.fastmcp import FastMCP
+
         STARTUP_MARKER = {escape_path_for_python(startup_marker)}
         CLEANUP_MARKER = {escape_path_for_python(cleanup_marker)}
 
@@ -164,6 +166,7 @@ async def test_stdin_close_triggers_cleanup():
         from pathlib import Path
         from contextlib import asynccontextmanager
         from mcp.server.fastmcp import FastMCP
+
         STARTUP_MARKER = {escape_path_for_python(startup_marker)}
         CLEANUP_MARKER = {escape_path_for_python(cleanup_marker)}
 
