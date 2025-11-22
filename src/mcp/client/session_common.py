@@ -6,12 +6,12 @@ from jsonschema import ValidationError, SchemaError
 from jsonschema.validators import validate
 
 if TYPE_CHECKING:
-    from mcp.client.session import TransportSession
+    from mcp.client.session import ClientSession
 
 class SamplingFnT(Protocol):
     async def __call__(
         self,
-        context: RequestContext["TransportSession", Any],
+        context: RequestContext["ClientSession", Any],
         params: types.CreateMessageRequestParams,
     ) -> types.CreateMessageResult | types.ErrorData: ...
 
@@ -19,14 +19,14 @@ class SamplingFnT(Protocol):
 class ElicitationFnT(Protocol):
     async def __call__(
         self,
-        context: RequestContext["TransportSession", Any],
+        context: RequestContext["ClientSession", Any],
         params: types.ElicitRequestParams,
     ) -> types.ElicitResult | types.ErrorData: ...
 
 
 class ListRootsFnT(Protocol):
     async def __call__(
-        self, context: RequestContext["TransportSession", Any]
+        self, context: RequestContext["ClientSession", Any]
     ) -> types.ListRootsResult | types.ErrorData: ...
 
 
