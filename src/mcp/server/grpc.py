@@ -6,7 +6,8 @@ This module provides a gRPC transport for MCP servers.
 
 import asyncio
 import logging
-from typing import AsyncIterator, TYPE_CHECKING
+from typing import AsyncIterator, TYPE_CHECKING, cast
+from mcp.server.lowlevel.server import ServerSession
 from datetime import timedelta
 
 from google.protobuf import json_format
@@ -20,7 +21,6 @@ from mcp.server.grpc_session import GrpcSession
 from mcp.server.lowlevel.server import RequestContext
 from mcp.shared import convert
 from mcp.shared import grpc_utils
-from mcp.shared import version
 if TYPE_CHECKING:
     from mcp.server.fastmcp.server import FastMCP
 
@@ -31,8 +31,8 @@ logger = logging.getLogger(__name__)
 class McpServicer(mcp_pb2_grpc.McpServicer):
   """gRPC servicer for MCP protocol."""
 
-  def __init__(self, mcp_server):
-    self.mcp_server = mcp_server
+  def __init__(self, mcp_server: FastMCP):
+    self.mcp_server: FastMCP = mcp_server
     # TODO(asheshvidyut): Make this a configurable parameter.
     self.list_resources_ttl: timedelta = timedelta(minutes=60)
     self.list_resource_templates_ttl: timedelta = timedelta(minutes=60)
@@ -51,7 +51,7 @@ class McpServicer(mcp_pb2_grpc.McpServicer):
     return self._tool_cache.get(tool_name)
 
   @grpc_utils.check_protocol_version_from_metadata
-  async def ListResources(self, request, context):
+  async def ListResources(self, request: mcp_pb2.ListResourcesRequest, context: aio.ServicerContext[mcp_pb2.ListResourcesRequest, mcp_pb2.ListResourcesResponse]) -> mcp_pb2.ListResourcesResponse:
     """List resources."""
     try:
       resources = await self.mcp_server.list_resources()
@@ -61,7 +61,7 @@ class McpServicer(mcp_pb2_grpc.McpServicer):
           common=mcp_pb2.ResponseFields(),
           resources=resource_protos,
       )
-      response.ttl.CopyFrom(convert.ttl_from_timedelta(self.list_resources_ttl))
+      response.ttl.CopyFrom(convert.ttl_from_timedelta(self.list_resources_ttl))  # type: ignore[arg-type]
       return response
     except json_format.ParseError as e:
       error_message = f"Failed to parse resource data: {e}"
@@ -77,7 +77,7 @@ class McpServicer(mcp_pb2_grpc.McpServicer):
       )
 
   @grpc_utils.check_protocol_version_from_metadata
-  async def ListResourceTemplates(self, request, context):
+  async def ListResourceTemplates(self, request: mcp_pb2.ListResourceTemplatesRequest, context: aio.ServicerContext[mcp_pb2.ListResourceTemplatesRequest, mcp_pb2.ListResourceTemplatesResponse]) -> mcp_pb2.ListResourceTemplatesResponse:
     """List resource templates."""
     try:
       resource_templates = await self.mcp_server.list_resource_templates()
@@ -89,7 +89,7 @@ class McpServicer(mcp_pb2_grpc.McpServicer):
           common=mcp_pb2.ResponseFields(),
           resource_templates=resource_template_protos,
       )
-      response.ttl.CopyFrom(convert.ttl_from_timedelta(self.list_resource_templates_ttl))
+      response.ttl.CopyFrom(convert.ttl_from_timedelta(self.list_resource_templates_ttl))  # type: ignore[arg-type]
       return response
     except json_format.ParseError as e:
       error_message = f"Failed to parse resource template data: {e}"
@@ -107,7 +107,7 @@ class McpServicer(mcp_pb2_grpc.McpServicer):
       )
 
   @grpc_utils.check_protocol_version_from_metadata
-  async def ReadResource(self, request, context):
+  async def ReadResource(self, request: mcp_pb2.ReadResourceRequest, context: aio.ServicerContext[mcp_pb2.ReadResourceRequest, mcp_pb2.ReadResourceResponse]) -> mcp_pb2.ReadResourceResponse:
     """Read a resource."""
     try:
       contents = await self.mcp_server.read_resource(request.uri)
@@ -142,7 +142,7 @@ class McpServicer(mcp_pb2_grpc.McpServicer):
       )
 
   @grpc_utils.check_protocol_version_from_metadata
-  async def ListTools(self, request, context):
+  async def ListTools(self, request: mcp_pb2.ListToolsRequest, context: aio.ServicerContext[mcp_pb2.ListToolsRequest, mcp_pb2.ListToolsResponse]) -> mcp_pb2.ListToolsResponse:
     """List tools."""
     try:
       tools = await self.mcp_server.list_tools()
@@ -154,7 +154,7 @@ class McpServicer(mcp_pb2_grpc.McpServicer):
           common=mcp_pb2.ResponseFields(),
           tools=tool_protos,
       )
-      response.ttl.CopyFrom(convert.ttl_from_timedelta(self.list_tools_ttl))
+      response.ttl.CopyFrom(convert.ttl_from_timedelta(self.list_tools_ttl))  # type: ignore[arg-type]
       return response
     except json_format.ParseError as e:
       error_message = f"Failed to parse tool data: {e}"
@@ -172,8 +172,8 @@ class McpServicer(mcp_pb2_grpc.McpServicer):
   async def tool_runner(
       self,
       request_iterator: AsyncIterator[mcp_pb2.CallToolRequest],
-      response_queue: asyncio.Queue[mcp_pb2.CallToolResponse],
-      context: aio.ServicerContext,
+      response_queue: asyncio.Queue[mcp_pb2.CallToolResponse | None],
+      context: aio.ServicerContext[mcp_pb2.CallToolRequest, mcp_pb2.CallToolResponse],
   ):
     """Runs the tool and puts the final result on the queue."""
     tool_name = None
@@ -199,9 +199,9 @@ class McpServicer(mcp_pb2_grpc.McpServicer):
       logger.info("Progress token from request: %s", progress_token)
 
       req_context = RequestContext(
-          request_id=progress_token,
+          request_id=progress_token if progress_token is not None else f"tool_call_{id(request)}",
           meta=types.RequestParams.Meta(progressToken=progress_token),
-          session=GrpcSession(response_queue),
+          session=cast(ServerSession, GrpcSession(response_queue)),  # Unsafe cast
           lifespan_context=context,
       )
 
@@ -263,10 +263,10 @@ class McpServicer(mcp_pb2_grpc.McpServicer):
       await response_queue.put(None)
 
   @grpc_utils.check_protocol_version_from_metadata
-  async def CallTool(self, request_iterator, context):
+  async def CallTool(self, request_iterator: AsyncIterator[mcp_pb2.CallToolRequest], context: aio.ServicerContext[mcp_pb2.CallToolRequest, mcp_pb2.CallToolResponse]) -> AsyncIterator[mcp_pb2.CallToolResponse]:
     """Call a tool."""
 
-    response_queue = asyncio.Queue()
+    response_queue = asyncio.Queue[mcp_pb2.CallToolResponse | None]()
 
     tool_task = asyncio.create_task(
         self.tool_runner(request_iterator, response_queue, context)
@@ -298,7 +298,7 @@ class McpServicer(mcp_pb2_grpc.McpServicer):
 
   async def _make_error_result(
       self,
-      response_queue: asyncio.Queue,
+      response_queue: asyncio.Queue[mcp_pb2.CallToolResponse | None],
       error_message: str,
   ):
     """Create an error response and put it on the response queue."""
@@ -311,7 +311,7 @@ class McpServicer(mcp_pb2_grpc.McpServicer):
     ))
     await response_queue.put(None)
 
-def _enable_grpc_reflection(server: grpc.Server) -> None:
+def _enable_grpc_reflection(server: aio.Server) -> None:
   """Enables gRPC reflection on the given server."""
   logger.info("gRPC reflection enabled")
   service_names = (
@@ -323,12 +323,11 @@ def _enable_grpc_reflection(server: grpc.Server) -> None:
 
 def attach_mcp_server_to_grpc_server(
     mcp_server: "FastMCP",
-    server: grpc.Server,
+    server: aio.Server,
 ) -> None:
   """Attach a MCP server to a gRPC server."""
   # Create servicer and add to server
-  servicer = McpServicer(mcp_server)
-  mcp_pb2_grpc.add_McpServicer_to_server(servicer, server)
+  mcp_pb2_grpc.add_McpServicer_to_server(McpServicer(mcp_server), server)  # type: ignore[module-attr]
 
   # Enable gRPC reflection
   if mcp_server.settings.grpc_enable_reflection:

@@ -311,7 +311,7 @@ def _populate_content_from_content_block(
 
 def unstructured_tool_output_to_proto(
     tool_output: Sequence[types.ContentBlock],
-) -> list[mcp_pb2.CallToolResponse]:
+) -> list[mcp_pb2.CallToolResponse.Content]:
   """Converts unstructured tool output to a list of CallToolResponse protos."""
   logger.info("unstructured_tool_output_to_proto: tool_output=%s", tool_output)
   if not tool_output:
