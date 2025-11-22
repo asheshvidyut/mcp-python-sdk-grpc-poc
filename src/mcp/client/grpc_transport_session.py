@@ -8,7 +8,7 @@ from grpc import aio
 from google.protobuf import json_format
 
 from mcp import types
-import mcp.client.session_common as session_common
+from mcp.client import session_common
 from mcp.client.cache import CacheEntry
 from mcp.client.session_common import ElicitationFnT
 from mcp.client.session_common import ListRootsFnT

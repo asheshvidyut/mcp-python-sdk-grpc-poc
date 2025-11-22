@@ -3,10 +3,11 @@ from typing import Any, Generic
 
 from typing_extensions import TypeVar
 
-from mcp.shared.session import BaseSession
+from mcp.client.transport_session import TransportSession as ClientTransportSession
+from mcp.server.transport_session import TransportSession as ServerTransportSession
 from mcp.types import RequestId, RequestParams
 
-SessionT = TypeVar("SessionT", bound=BaseSession[Any, Any, Any, Any, Any])
+SessionT = TypeVar("SessionT", bound=ClientTransportSession | ServerTransportSession)
 LifespanContextT = TypeVar("LifespanContextT")
 RequestT = TypeVar("RequestT", default=Any)
 
