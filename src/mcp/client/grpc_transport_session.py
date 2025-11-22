@@ -1,24 +1,20 @@
 from datetime import timedelta
 import logging
 import asyncio
-import uuid
 import base64
-import time
 
 import grpc
 from grpc import aio
 from google.protobuf import json_format
-from jsonschema import ValidationError, SchemaError
-from jsonschema.validators import validate
 
 from mcp import types
+import mcp.client.session_common as session_common
 from mcp.client.cache import CacheEntry
 from mcp.client.session_common import ElicitationFnT
 from mcp.client.session_common import ListRootsFnT
 from mcp.client.session_common import LoggingFnT
 from mcp.client.session_common import MessageHandlerFnT
 from mcp.client.session_common import SamplingFnT
-from mcp.client.session_common import _validate_tool_result
 from mcp.client.transport_session import TransportSession
 from mcp.proto import mcp_pb2
 from mcp.proto import mcp_pb2_grpc
@@ -27,12 +23,13 @@ from mcp.shared import grpc_utils
 from mcp.shared.exceptions import McpError
 from mcp.shared import version
 
-from typing import Any
+from typing import Any, Sequence, Optional, Tuple, cast
 
 from mcp.shared.session import ProgressFnT
 from mcp.types import ErrorData
 from pydantic import AnyUrl
 
+ChannelArgumentType = Sequence[Tuple[str, Any]]
 
 LATEST_PROTOCOL_VERSION = types.LATEST_PROTOCOL_VERSION
 logger = logging.getLogger(__name__)
@@ -54,17 +51,19 @@ class GRPCTransportSession(TransportSession):
         logging_callback: LoggingFnT | None = None,
         message_handler: MessageHandlerFnT | None = None,
         client_info: types.Implementation | None = None,
-        **kwargs,
+        options: Optional[ChannelArgumentType] = None,
+        compression: Optional[grpc.Compression] = None,
+        interceptors: Optional[Sequence[grpc.aio.ClientInterceptor]] = None,
     ) -> None:
       """Initialize the gRPC transport session."""
       logger.info("Creating GRPCTransportSession for target: %s", target)
       if channel_credential is not None:
-          channel = aio.secure_channel(target, channel_credential, **kwargs)
+          channel = aio.secure_channel(target, channel_credential, options=options, compression=compression, interceptors=interceptors)
       else:
-          channel = aio.insecure_channel(target, **kwargs)
+          channel = aio.insecure_channel(target, options=options, compression=compression, interceptors=interceptors)
 
       stub = mcp_pb2_grpc.McpStub(channel)
-      self.grpc_stub = stub
+      self._grpc_stub = stub
       self._channel = channel
       self._request_counter = 0
       self._progress_callbacks: dict[str | int, ProgressFnT] = {}
@@ -132,8 +131,8 @@ class GRPCTransportSession(TransportSession):
         Returns True if the version was updated and the call should be retried.
         """
         if e.code() == grpc.StatusCode.UNIMPLEMENTED:
-            initial_metadata = e.initial_metadata()
-            negotiated_version = grpc_utils.get_metadata_value(initial_metadata, grpc_utils.MCP_PROTOCOL_VERSION_KEY)
+            initial_metadata = e.initial_metadata() # type: ignore[attr-defined]
+            negotiated_version = grpc_utils.get_metadata_value(initial_metadata, grpc_utils.MCP_PROTOCOL_VERSION_KEY) # type: ignore[attr-defined]
 
             if negotiated_version is None:
                 logger.warning(
@@ -254,7 +253,7 @@ class GRPCTransportSession(TransportSession):
               else None
           )
           response = await self._call_unary_rpc(
-              self.grpc_stub.ListResources, request, timeout
+              self._grpc_stub.ListResources, request, timeout # type: ignore[attr-defined]
           )
           resources = convert.resource_protos_to_types(list(response.resources))
           resources_dict = {resource.name: resource for resource in resources}
@@ -293,7 +292,7 @@ class GRPCTransportSession(TransportSession):
                 else None
             )
             response = await self._call_unary_rpc(
-                self.grpc_stub.ListResourceTemplates, request, timeout
+                self._grpc_stub.ListResourceTemplates, request, timeout # type: ignore[attr-defined]
             )
             resource_templates = convert.resource_template_protos_to_types(
                 list(response.resource_templates)
@@ -340,10 +339,10 @@ class GRPCTransportSession(TransportSession):
             )
             metadata = [(grpc_utils.MCP_RESOURCE_URI_KEY, str(uri))]
             response = await self._call_unary_rpc(
-                self.grpc_stub.ReadResource, request, timeout, metadata=metadata
+                self._grpc_stub.ReadResource, request, timeout, metadata=metadata # type: ignore[attr-defined]
             )
             resource_contents_list = response.resource
-            contents = []
+            contents: list[types.TextResourceContents | types.BlobResourceContents] = []
             for res_content in resource_contents_list:
               if res_content.text:
                   contents.append(
@@ -418,15 +417,16 @@ class GRPCTransportSession(TransportSession):
             self._progress_callbacks[request_id] = progress_callback
 
         for attempt in range(1, 3):
-            proto_results = []
+            proto_results: list[mcp_pb2.CallToolResponse.Content] = []
             structured_content = None
-            is_error = False
+            is_error: bool = False
+            timeout_td: timedelta | None = None
             try:
                 request_iterator = convert.generate_call_tool_requests(
                     self.request_generator(name, request_id, arguments)
                 )
                 # read_timeout_seconds takes precedence over session timeout
-                timeout_td = (
+                timeout_td: timedelta | None = (
                     read_timeout_seconds or self._session_read_timeout_seconds
                 )
                 timeout = timeout_td.total_seconds() if timeout_td else None
@@ -434,13 +434,15 @@ class GRPCTransportSession(TransportSession):
                     (grpc_utils.MCP_TOOL_NAME_KEY, name),
                     (grpc_utils.MCP_PROTOCOL_VERSION_KEY, self.negotiated_version)
                 ]
-                call = self.grpc_stub.CallTool(
+                call = self._grpc_stub.CallTool( # type: ignore[attr-defined]
                     request_iterator,
                     timeout=timeout,
                     metadata=metadata,
                 )
                 self._running_calls[request_id] = call
-                async for response in call:
+                async for response in call:  # type: ignore[attr-defined]
+
+                    response = cast(mcp_pb2.CallToolResponse, response)
 
                     if response.common.HasField("progress"):
                         progress_proto = response.common.progress
@@ -470,7 +472,7 @@ class GRPCTransportSession(TransportSession):
                         )
                     is_error = is_error or response.is_error
 
-                final_result = convert.proto_result_to_content(
+                final_result: types.CallToolResult = convert.proto_result_to_content( # type: ignore[attr-defined]
                     proto_results, structured_content, is_error
                 )
                 # Clean up the running call and progress callback after the call is complete.
@@ -515,7 +517,7 @@ class GRPCTransportSession(TransportSession):
                         )
                     ) from e
                 if e.code() == grpc.StatusCode.DEADLINE_EXCEEDED:
-                    timeout = timeout_td.total_seconds() if timeout_td else 'N/A'
+                    timeout: float | str | None = timeout_td.total_seconds() if timeout_td else 'N/A'
                     raise McpError(
                         ErrorData(
                             code=types.REQUEST_TIMEOUT,
@@ -585,7 +587,7 @@ class GRPCTransportSession(TransportSession):
             tool_schema = tool.outputSchema
 
         if tool_schema is not None:
-            await _validate_tool_result(tool_schema, name, result)
+            await session_common.validate_tool_result(tool_schema, name, result) # type: ignore[attr-defined]
         else:
             logger.warning(
                 "Tool %s not listed by server, cannot validate any structured"
@@ -633,7 +635,7 @@ class GRPCTransportSession(TransportSession):
                 else None
             )
             response = await self._call_unary_rpc(
-                self.grpc_stub.ListTools, request, timeout
+                self._grpc_stub.ListTools, request, timeout # type: ignore[attr-defined]
             )
 
             # Convert gRPC response to ListToolsResult
