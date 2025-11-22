@@ -44,7 +44,6 @@ def check_protocol_version_from_metadata(
       ])
     async for item in cast(AsyncGenerator[Any, None], func(self, request, context, *args, **kwargs)):
       yield item
-      yield item
 
   if asyncio.iscoroutinefunction(func):
     return cast(WrappedFunc, async_wrapper)
