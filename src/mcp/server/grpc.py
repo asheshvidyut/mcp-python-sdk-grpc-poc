@@ -6,7 +6,7 @@ This module provides a gRPC transport for MCP servers.
 
 import asyncio
 import logging
-from typing import AsyncIterator
+from typing import AsyncIterator, TYPE_CHECKING
 from datetime import timedelta
 
 from google.protobuf import json_format
@@ -21,6 +21,8 @@ from mcp.server.lowlevel.server import RequestContext
 from mcp.shared import convert
 from mcp.shared import grpc_utils
 from mcp.shared import version
+if TYPE_CHECKING:
+    from mcp.server.fastmcp.server import FastMCP
 
 
 logger = logging.getLogger(__name__)
@@ -320,7 +322,7 @@ def _enable_grpc_reflection(server: grpc.Server) -> None:
 
 
 def attach_mcp_server_to_grpc_server(
-    mcp_server,  # This is the FastMCP server
+    mcp_server: "FastMCP",
     server: grpc.Server,
 ) -> None:
   """Attach a MCP server to a gRPC server."""
@@ -332,8 +334,8 @@ def attach_mcp_server_to_grpc_server(
   if mcp_server.settings.grpc_enable_reflection:
     _enable_grpc_reflection(server)
 
-async def create_mcp_server(
-    mcp_server,
+async def create_mcp_grpc_server(
+    mcp_server: "FastMCP",
     target: str = "127.0.0.1:50051",
 ) -> aio.Server:
   """Create a simple gRPC server for MCP.

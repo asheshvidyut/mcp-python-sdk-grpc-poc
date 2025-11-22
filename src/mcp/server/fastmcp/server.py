@@ -296,7 +296,7 @@ class FastMCP(Generic[LifespanResultT]):
             case "grpc":
                 """Attach the FastMCP server with a gRPC server."""
                 from mcp.server.grpc import (  # pylint: disable=g-import-not-at-top
-                    attach_mcp_server_to_grpc_server,
+                    attach_mcp_server_to_grpc_server, # type: ignore[attr-defined]
                 )
                 attach_mcp_server_to_grpc_server(self, server)
             case "streamable-http":
@@ -312,7 +312,7 @@ class FastMCP(Generic[LifespanResultT]):
         # Note: we disable the lowlevel server's input validation.
         # FastMCP does ad hoc conversion of incoming data before validating -
         # for now we preserve this for backwards compatibility.
-        self._mcp_server.call_tool(validate_input=False)(self.call_tool)
+        self._mcp_server.call_tool(validate_input=False)(self.call_tool) # type: ignore[attr-defined]
         self._mcp_server.list_resources()(self.list_resources)
         self._mcp_server.read_resource()(self.read_resource)
         self._mcp_server.list_prompts()(self.list_prompts)
@@ -346,7 +346,7 @@ class FastMCP(Generic[LifespanResultT]):
         return Context(request_context=request_context, fastmcp=self)
 
     async def call_tool(
-        self, name: str, arguments: dict[str, Any], request_context: RequestContext | None = None
+        self, name: str, arguments: dict[str, Any], request_context: RequestContext[ServerSession, LifespanResultT, Request] | None = None
     ) -> Sequence[ContentBlock] | dict[str, Any]:
         """Call a tool by name with arguments."""
         if request_context:
@@ -738,8 +738,8 @@ class FastMCP(Generic[LifespanResultT]):
         """Run the server with gRPC transport."""
         # Imports are not at the top of file because grpc
         # is an optional dependency.
-        from mcp.server.grpc import create_mcp_server # pylint: disable=g-import-not-at-top
-        server = await create_mcp_server(
+        from mcp.server.grpc import create_mcp_grpc_server # pylint: disable=g-import-not-at-top
+        server = await create_mcp_grpc_server(
             mcp_server=self,
             target=self.settings.target
         )
