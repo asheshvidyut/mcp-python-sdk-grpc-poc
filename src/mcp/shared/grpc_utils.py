@@ -2,15 +2,17 @@
 
 import asyncio
 import functools
+import inspect
 import grpc
 from grpc import aio
 from mcp.shared import version
-from typing import Any, Callable, TypeVar, Coroutine, AsyncGenerator, Tuple, Union
+from typing import Any, Callable, TypeVar, AsyncGenerator, List, Coroutine, cast
 from typing_extensions import ParamSpec
 
 P = ParamSpec("P")
 R = TypeVar("R")
 T = TypeVar("T")
+WrappedFunc = TypeVar("WrappedFunc", bound=Callable[..., Any])
 
 MCP_PROTOCOL_VERSION_KEY = "mcp-protocol-version"
 MCP_TOOL_NAME_KEY = "mcp-tool-name"
@@ -18,45 +20,52 @@ MCP_RESOURCE_URI_KEY = "mcp-resource-uri"
 
 
 def check_protocol_version_from_metadata(
-    func: Callable[P, R]
-) -> Callable[P, R]:
+    func: WrappedFunc
+) -> WrappedFunc:
   """Decorator to check protocol version from metadata for gRPC methods.
   It aborts the RPC if the protocol version is not provided or is not supported.
   """
 
   @functools.wraps(func)
-  async def async_wrapper(self: Any, request: Any, context: aio.ServicerContext, *args: P.args, **kwargs: P.kwargs) -> Any:
+  async def async_wrapper(self: Any, request: Any, context: aio.ServicerContext[Any, Any], *args: Any, **kwargs: Any) -> Any:
     protocol_version_str = await get_protocol_version_from_context(context, version.SUPPORTED_PROTOCOL_VERSIONS)
     if protocol_version_str in version.SUPPORTED_PROTOCOL_VERSIONS:
       await context.send_initial_metadata([
           (MCP_PROTOCOL_VERSION_KEY, protocol_version_str),
       ])
-    return await func(self, request, context, *args, **kwargs)
+    return await cast(Coroutine[Any, Any, Any], func(self, request, context, *args, **kwargs))
 
   @functools.wraps(func)
-  async def async_generator_wrapper(self: Any, request: Any, context: aio.ServicerContext, *args: P.args, **kwargs: P.kwargs) -> AsyncGenerator[Any, None]:
+  async def async_generator_wrapper(self: Any, request: Any, context: aio.ServicerContext[Any, Any], *args: Any, **kwargs: Any) -> AsyncGenerator[Any, None]:
     protocol_version_str = await get_protocol_version_from_context(context, version.SUPPORTED_PROTOCOL_VERSIONS)
     if protocol_version_str in version.SUPPORTED_PROTOCOL_VERSIONS:
       await context.send_initial_metadata([
           (MCP_PROTOCOL_VERSION_KEY, protocol_version_str),
       ])
-    async for item in func(self, request, context, *args, **kwargs):
+    async for item in cast(AsyncGenerator[Any, None], func(self, request, context, *args, **kwargs)):
+      yield item
       yield item
 
   if asyncio.iscoroutinefunction(func):
-    return async_wrapper
+    return cast(WrappedFunc, async_wrapper)
+  elif inspect.isasyncgenfunction(func):
+    return cast(WrappedFunc, async_generator_wrapper)
   else:
-    return async_generator_wrapper
+    # This case should not happen for gRPC handlers
+    return func
 
 
 
 
 async def get_protocol_version_from_context(
-    context: aio.ServicerContext, supported_versions: str
+    context: aio.ServicerContext[Any, Any], supported_versions: List[str]
 ) -> str:
   """Extracts and validates the protocol version from gRPC metadata, canceling the RPC if invalid."""
   metadata = context.invocation_metadata()
-  protocol_version_str = get_metadata_value(metadata, MCP_PROTOCOL_VERSION_KEY)
+  if metadata is None:
+    protocol_version_str = None
+  else:
+    protocol_version_str = get_metadata_value(cast(tuple[tuple[str, str | bytes], ...], metadata), MCP_PROTOCOL_VERSION_KEY)
 
   if protocol_version_str is None:
     supported_versions_str = ", ".join(supported_versions)
