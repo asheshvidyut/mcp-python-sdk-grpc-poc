@@ -195,7 +195,7 @@ def resource_template_protos_to_types(
 
 def read_resource_content_to_proto(
     uri: str,
-    contents: list[ReadResourceContents],
+    contents: Sequence[ReadResourceContents],
 ) -> list[mcp_pb2.ResourceContents]:
   """Converts a ReadResourceContents to a mcp_pb2.ResourceContents."""
 

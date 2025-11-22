@@ -8,6 +8,8 @@ import pytest
 import mcp.types as types
 from mcp.server.lowlevel.server import Server
 from mcp.shared.exceptions import McpError
+from typing import cast
+from mcp.client.session import ClientSession
 from mcp.shared.memory import create_connected_server_and_client_session
 from mcp.types import (
     CallToolRequest,
@@ -58,7 +60,7 @@ async def test_server_remains_functional_after_cancel():
         # First request (will be cancelled)
         async def first_request():
             try:
-                await client.send_request(
+                await cast(ClientSession, client).send_request(
                     ClientRequest(
                         CallToolRequest(
                             method="tools/call",
@@ -80,7 +82,7 @@ async def test_server_remains_functional_after_cancel():
 
             # Cancel it
             assert first_request_id is not None
-            await client.send_notification(
+            await cast(ClientSession, client).send_notification(
                 ClientNotification(
                     CancelledNotification(
                         method="notifications/cancelled",
@@ -93,7 +95,7 @@ async def test_server_remains_functional_after_cancel():
             )
 
         # Second request (should work normally)
-        result = await client.send_request(
+        result = await cast(ClientSession, client).send_request(
             ClientRequest(
                 CallToolRequest(
                     method="tools/call",
