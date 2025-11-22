@@ -1,9 +1,12 @@
-from typing import Any, Protocol
+from typing import Any, Protocol, TYPE_CHECKING
 import mcp.types as types
 from mcp.shared.context import RequestContext
 from mcp.shared.session import RequestResponder
 from jsonschema import ValidationError, SchemaError
 from jsonschema.validators import validate
+
+if TYPE_CHECKING:
+    from mcp.client.session import TransportSession
 
 class SamplingFnT(Protocol):
     async def __call__(
@@ -40,11 +43,11 @@ class MessageHandlerFnT(Protocol):
         message: RequestResponder[types.ServerRequest, types.ClientResult] | types.ServerNotification | Exception,
     ) -> None: ...
 
-async def _validate_tool_result(output_schema: dict[str, Any],
-                                name: str,
-                                result: types.CallToolResult) -> None:
+async def validate_tool_result(output_schema: dict[str, Any],
+                               name: str,
+                               result: types.CallToolResult) -> None:
     """Validates tool result structured content against its output schema."""
-    if output_schema is not None and bool(output_schema):
+    if output_schema and len(output_schema) > 0:
         if result.structuredContent is None and not result.content:
             raise RuntimeError(
                 f"Tool {name} has an output schema but did not return"
