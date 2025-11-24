@@ -92,6 +92,9 @@ Issues = "https://github.com/modelcontextprotocol/python-sdk/issues"
 [tool.hatch.build.targets.wheel]
 packages = ["src/mcp"]
 
+[tool.hatch.build.hooks.custom]
+path = "build_hook.py"
+
 [tool.pyright]
 typeCheckingMode = "strict"
 include = ["src/mcp", "tests", "examples/servers", "examples/snippets"]
