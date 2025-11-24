@@ -15,11 +15,13 @@ class CustomBuildHook(BuildHookInterface):
             original_import = "import mcp_pb2 as mcp__pb2"
             patched_import = "from . import mcp_pb2 as mcp__pb2"
 
-            if original_import in content:
+            if original_import in content and patched_import not in content:
                 content = content.replace(original_import, patched_import)
                 with open(grpc_file, "w") as f:
                     f.write(content)
                 print(f"Successfully patched {grpc_file}")
+            elif patched_import in content:
+                print(f"{grpc_file} is already patched.")
             else:
                 print(f"Import statement not found in {grpc_file}, skipping patch.")
         else:
