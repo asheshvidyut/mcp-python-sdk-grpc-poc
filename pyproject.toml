@@ -63,13 +63,8 @@ dev = [
     "pytest-examples>=0.0.14",
     "pytest-pretty>=1.2.0",
     "pytest-asyncio>=0.23.7",
-    "grpc>=1.64.1",
-    "grpcio-tools>=1.64.1",
     "inline-snapshot>=0.23.0",
     "dirty-equals>=0.9.0",
-    "grpcio>=1.74.0",
-    "protobuf>=6.32.0",
-    "grpcio-reflection>=1.74.0"
 ]
 docs = [
     "mkdocs>=1.6.1",
