@@ -9,7 +9,6 @@ from typing import Any, Sequence, cast, Iterable, TypeAlias
 
 import jsonschema
 from google.protobuf import json_format
-from google.protobuf.message import Message
 from mcp.server.lowlevel.helper_types import ReadResourceContents
 
 from mcp import types
@@ -39,7 +38,7 @@ def resource_type_to_proto(resource: types.Resource) -> mcp_pb2.Resource:
   """Converts a types.Resource object to a Resource protobuf message."""
   proto_annotations = None
   if resource.annotations:
-    audience = []
+    audience: list[mcp_pb2.Role] = []
     if resource.annotations.audience:
       for role in resource.annotations.audience:
         if role == "user":
@@ -75,19 +74,19 @@ def resource_proto_to_type(resource_proto: mcp_pb2.Resource) -> types.Resource:
     """Converts a Resource protobuf message to a types.Resource object."""
     annotations = None
     if resource_proto.HasField("annotations"):
-        audience = []
+        audience: list[types.Role] = []
         for role in resource_proto.annotations.audience:
             if role == mcp_pb2.ROLE_USER:
-                audience.append("user")
+                audience.append(cast(types.Role, "user"))
             elif role == mcp_pb2.ROLE_ASSISTANT:
-                audience.append("assistant")
+                audience.append(cast(types.Role, "assistant"))
         annotations = types.Annotations(
             audience=audience,
             priority=resource_proto.annotations.priority,
         )
 
     return types.Resource(
-        uri=resource_proto.uri,
+        uri=types.AnyUrl(resource_proto.uri),
         name=resource_proto.name,
         title=resource_proto.title,
         description=resource_proto.description,
@@ -110,7 +109,7 @@ def resource_template_type_to_proto(
     """Converts a types.ResourceTemplate object to a ResourceTemplate protobuf message."""
     proto_annotations = None
     if resource_template.annotations:
-        audience = []
+        audience: list[mcp_pb2.Role] = []
         if resource_template.annotations.audience:
             for role in resource_template.annotations.audience:
                 if role == "user":
@@ -140,7 +139,7 @@ def resource_template_types_to_protos(
     """Converts types.ResourceTemplate list to ResourceTemplate proto list."""
     # Keeping selected fields as proto does not have all the fields of
     # types.ResourceTemplate
-    typed_templates = []
+    typed_templates: list[types.ResourceTemplate] = []
     for t in resource_templates:
         typed_templates.append(
             types.ResourceTemplate(
@@ -163,19 +162,19 @@ def resource_template_proto_to_type(
     """Converts a ResourceTemplate protobuf message to a types.ResourceTemplate object."""
     annotations = None
     if resource_template_proto.HasField("annotations"):
-        audience = []
+        audience: list[types.Role] = []
         for role in resource_template_proto.annotations.audience:
             if role == mcp_pb2.ROLE_USER:
-                audience.append("user")
+                audience.append(cast(types.Role, "user"))
             elif role == mcp_pb2.ROLE_ASSISTANT:
-                audience.append("assistant")
+                audience.append(cast(types.Role, "assistant"))
         annotations = types.Annotations(
             audience=audience,
             priority=resource_template_proto.annotations.priority,
         )
 
     return types.ResourceTemplate(
-        uriTemplate=resource_template_proto.uri_template,
+        uriTemplate=str(types.AnyUrl(resource_template_proto.uri_template)),
         name=resource_template_proto.name,
         title=resource_template_proto.title,
         description=resource_template_proto.description,
@@ -196,11 +195,11 @@ def resource_template_protos_to_types(
 
 def read_resource_content_to_proto(
     uri: str,
-    contents: list[ReadResourceContents],
+    contents: Sequence[ReadResourceContents],
 ) -> list[mcp_pb2.ResourceContents]:
   """Converts a ReadResourceContents to a mcp_pb2.ResourceContents."""
 
-  resource_contents = []
+  resource_contents: list[mcp_pb2.ResourceContents] = []
   for content_item in contents:
     resource_content = mcp_pb2.ResourceContents(
         uri=uri,
@@ -208,13 +207,13 @@ def read_resource_content_to_proto(
     )
     if isinstance(content_item.content, str):
       resource_content.text = content_item.content
-    elif isinstance(content_item.content, bytes):
+    else:
       resource_content.blob = content_item.content
     resource_contents.append(resource_content)
   return resource_contents
 
 
-def tool_proto_to_type(tool_proto: Message) -> types.Tool:
+def tool_proto_to_type(tool_proto: mcp_pb2.Tool) -> types.Tool:
   """Converts a Tool protobuf message to a types.Tool object."""
   try:
     input_schema = json_format.MessageToDict(tool_proto.input_schema)
@@ -269,7 +268,7 @@ def tool_types_to_protos(tools: list[types.Tool]) -> list[mcp_pb2.Tool]:
   return [tool_type_to_proto(tool) for tool in tools]
 
 
-def tool_protos_to_types(tool_protos: list[Message]) -> list[types.Tool]:
+def tool_protos_to_types(tool_protos: list[mcp_pb2.Tool]) -> list[types.Tool]:
   """Converts a list of Tool protos to a list of types.Tool."""
   return [tool_proto_to_type(tool_proto) for tool_proto in tool_protos]
 
@@ -292,16 +291,16 @@ def _populate_content_from_content_block(
   elif isinstance(content_block, types.EmbeddedResource):
     resource_contents = content_block.resource
     result.embedded_resource.contents.uri = str(resource_contents.uri)
-    result.embedded_resource.contents.mime_type = resource_contents.mimeType
+    result.embedded_resource.contents.mime_type = resource_contents.mimeType or ""
     if isinstance(resource_contents, types.TextResourceContents):
       result.embedded_resource.contents.text = resource_contents.text
       return True
-    elif isinstance(resource_contents, types.BlobResourceContents):
+    if resource_contents.blob:
       result.embedded_resource.contents.blob = base64.b64decode(
           resource_contents.blob
       )
       return True
-  elif isinstance(content_block, types.ResourceLink):
+  if isinstance(content_block, types.ResourceLink):
     result.resource_link.uri = str(content_block.uri)
     if content_block.name:
       result.resource_link.name = content_block.name
@@ -311,14 +310,14 @@ def _populate_content_from_content_block(
 
 def unstructured_tool_output_to_proto(
     tool_output: Sequence[types.ContentBlock],
-) -> list[mcp_pb2.CallToolResponse]:
+) -> list[mcp_pb2.CallToolResponse.Content]:
   """Converts unstructured tool output to a list of CallToolResponse protos."""
   logger.info("unstructured_tool_output_to_proto: tool_output=%s", tool_output)
   if not tool_output:
     return []
 
   items = tool_output
-  contents = []
+  contents: list[mcp_pb2.CallToolResponse.Content] = []
   for item in items:
     content_item = mcp_pb2.CallToolResponse.Content()
     if _populate_content_from_content_block(item, content_item):
@@ -331,11 +330,11 @@ def unstructured_tool_output_to_proto(
 
 def proto_result_to_content(
     proto_results: list[mcp_pb2.CallToolResponse.Content],
-    structured_content: dict | None = None,
+    structured_content: dict[str, Any] | None = None,
     is_error: bool = False,
 ) -> types.CallToolResult:
   """Converts a CallToolResponse.Content proto to a types.CallToolResult."""
-  content = []
+  content: list[types.ContentBlock] = []
   for proto_result in proto_results:
     if proto_result.HasField("text"):
       content.append(
@@ -358,13 +357,13 @@ def proto_result_to_content(
       res_content = None
       if resource_contents.text:
         res_content = types.TextResourceContents(
-            uri=resource_contents.uri,
+            uri=types.AnyUrl(resource_contents.uri),
             mimeType=resource_contents.mime_type,
             text=resource_contents.text,
         )
       elif resource_contents.blob:
         res_content = types.BlobResourceContents(
-            uri=resource_contents.uri,
+            uri=types.AnyUrl(resource_contents.uri),
             mimeType=resource_contents.mime_type,
             blob=base64.b64encode(resource_contents.blob).decode("utf-8"),
         )
@@ -375,7 +374,7 @@ def proto_result_to_content(
     elif proto_result.HasField("resource_link"):
       content.append(types.ResourceLink(
           name=proto_result.resource_link.name,
-          type="resource_link", uri=proto_result.resource_link.uri
+          type="resource_link", uri=types.AnyUrl(proto_result.resource_link.uri)
       ))
   return types.CallToolResult(
       content=content,
@@ -397,26 +396,25 @@ def normalize_and_validate_tool_results(
     results: Any, tool: types.Tool | None
 ) -> tuple[Sequence[types.ContentBlock] | None, StructuredContent | None]:
   """Normalizes and validates tool results."""
-  unstructured_content: UnstructuredContent
-  maybe_structured_content: StructuredContent | None
-  if isinstance(results, tuple) and len(results) == 2:
+  unstructured_content: UnstructuredContent | None = None
+  maybe_structured_content: StructuredContent | None = None
+  """Normalizes and validates tool results."""
+  if isinstance(results, tuple) and len(cast(tuple[Any, ...], results)) == 2:
     # tool returned both structured and unstructured content
-    unstructured_content, maybe_structured_content = cast(
-        CombinationContent, results
-    )
+    unstructured_content, maybe_structured_content = cast(CombinationContent, results)
   elif isinstance(results, dict):
     # tool returned structured content only
     maybe_structured_content = cast(StructuredContent, results)
     unstructured_content = [
         types.TextContent(type="text", text=json.dumps(results, indent=2))
     ]
-  elif hasattr(results, "__iter__"):
+  elif isinstance(results, Iterable) and not isinstance(results, (str, bytes, dict)):
     # tool returned unstructured content only
     unstructured_content = cast(UnstructuredContent, results)
     maybe_structured_content = None
   else:
     raise ToolOutputValidationError(
-        f"Unexpected return type from tool: {type(results).__name__}"
+        f"Unexpected return type from tool: {type(cast(Any, results)).__name__}"
     )
 
   # output validation
@@ -481,13 +479,13 @@ async def generate_call_tool_requests(
       if args_struct:
         request.request.arguments.CopyFrom(args_struct)
 
-    elif isinstance(request_params, types.ProgressNotification):
+    if isinstance(request_params, types.ProgressNotification):
       progress_token = request_params.params.progressToken
       progress = request_params.params.progress
       total = request_params.params.total
       message = request_params.params.message
 
-      request.common.progress.progress_token = progress_token
+      request.common.progress.progress_token = str(progress_token)
       request.common.progress.progress = progress
       if total is not None:
         request.common.progress.total = total

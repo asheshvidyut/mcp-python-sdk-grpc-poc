@@ -1,5 +1,5 @@
 from collections.abc import AsyncGenerator
-from typing import Any
+from typing import Any, cast
 
 import anyio
 import pytest
@@ -9,12 +9,12 @@ from mcp.client.session import TransportSession
 from mcp.client.session import ClientSession
 from mcp.server.lowlevel.server import Server
 from mcp.shared.exceptions import McpError
+from mcp.types import ClientRequest
 from mcp.shared.memory import create_client_server_memory_streams, create_connected_server_and_client_session
 from mcp.types import (
     CancelledNotification,
     CancelledNotificationParams,
     ClientNotification,
-    ClientRequest,
     EmptyResult,
     TextContent,
 )
@@ -43,7 +43,7 @@ async def test_in_flight_requests_cleared_after_completion(
     assert isinstance(response, EmptyResult)
 
     # Verify _in_flight is empty
-    assert len(client_connected_to_server._in_flight) == 0
+    assert len(client_connected_to_server._in_flight) == 0  # type: ignore[attr-defined]
 
 
 @pytest.mark.anyio
@@ -83,7 +83,7 @@ async def test_request_cancellation():
 
         return server
 
-    async def make_request(client_session: TransportSession):
+    async def make_request(client_session: ClientSession):
         nonlocal ev_cancelled
         try:
             await client_session.send_request(
@@ -103,7 +103,7 @@ async def test_request_cancellation():
 
     async with create_connected_server_and_client_session(make_server()) as client_session:
         async with anyio.create_task_group() as tg:
-            tg.start_soon(make_request, client_session)
+            tg.start_soon(make_request, cast(ClientSession, client_session))
 
             # Wait for the request to be in-flight
             with anyio.fail_after(1):  # Timeout after 1 second
@@ -111,7 +111,7 @@ async def test_request_cancellation():
 
             # Send cancellation notification
             assert request_id is not None
-            await client_session.send_notification(
+            await cast(ClientSession, client_session).send_notification(
                 ClientNotification(
                     CancelledNotification(
                         method="notifications/cancelled",

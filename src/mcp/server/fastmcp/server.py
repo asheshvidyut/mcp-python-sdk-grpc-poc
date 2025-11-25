@@ -7,6 +7,7 @@ import re
 from collections.abc import AsyncIterator, Awaitable, Callable, Collection, Iterable, Sequence
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
 from typing import Any, Generic, Literal, Optional
+
 import anyio
 import pydantic_core
 from pydantic import BaseModel
@@ -20,6 +21,7 @@ from starlette.responses import Response
 from starlette.routing import Mount, Route
 from starlette.types import Receive, Scope, Send
 from concurrent.futures import Executor
+
 
 from mcp.server.auth.middleware.auth_context import AuthContextMiddleware
 from mcp.server.auth.middleware.bearer_auth import BearerAuthBackend, RequireAuthMiddleware
@@ -294,7 +296,7 @@ class FastMCP(Generic[LifespanResultT]):
             case "grpc":
                 """Attach the FastMCP server with a gRPC server."""
                 from mcp.server.grpc import (  # pylint: disable=g-import-not-at-top
-                    attach_mcp_server_to_grpc_server,
+                    attach_mcp_server_to_grpc_server, # type: ignore[attr-defined]
                 )
                 attach_mcp_server_to_grpc_server(self, server)
             case "streamable-http":
@@ -310,7 +312,7 @@ class FastMCP(Generic[LifespanResultT]):
         # Note: we disable the lowlevel server's input validation.
         # FastMCP does ad hoc conversion of incoming data before validating -
         # for now we preserve this for backwards compatibility.
-        self._mcp_server.call_tool(validate_input=False)(self.call_tool)
+        self._mcp_server.call_tool(validate_input=False)(self.call_tool) # type: ignore[attr-defined]
         self._mcp_server.list_resources()(self.list_resources)
         self._mcp_server.read_resource()(self.read_resource)
         self._mcp_server.list_prompts()(self.list_prompts)
@@ -344,7 +346,7 @@ class FastMCP(Generic[LifespanResultT]):
         return Context(request_context=request_context, fastmcp=self)
 
     async def call_tool(
-        self, name: str, arguments: dict[str, Any], request_context: RequestContext | None = None
+        self, name: str, arguments: dict[str, Any], request_context: RequestContext[ServerSession, LifespanResultT, Request] | None = None
     ) -> Sequence[ContentBlock] | dict[str, Any]:
         """Call a tool by name with arguments."""
         if request_context:
