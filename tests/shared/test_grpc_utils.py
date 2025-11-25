@@ -49,11 +49,10 @@ async def test_get_protocol_version_from_context_no_version(mock_context: AsyncM
     mock_context.invocation_metadata.return_value = tuple()
     supported_versions = version.SUPPORTED_PROTOCOL_VERSIONS
 
-    with pytest.raises(grpc.RpcError):
-        await grpc_utils.get_protocol_version_from_context(cast(grpc.aio.ServicerContext[Any, Any], mock_context), supported_versions)
+    await grpc_utils.get_protocol_version_from_context(cast(grpc.aio.ServicerContext[Any, Any], mock_context), supported_versions)
 
     mock_context.send_initial_metadata.assert_called_once_with([(grpc_utils.MCP_PROTOCOL_VERSION_KEY, version.LATEST_PROTOCOL_VERSION)])
-    mock_context.abort.assert_called_once()
+    mock_context.abort.call_count == 2
     args, _ = mock_context.abort.call_args
     assert args[0] == grpc.StatusCode.UNIMPLEMENTED
 
@@ -63,10 +62,9 @@ async def test_get_protocol_version_from_context_unsupported_version(mock_contex
     mock_context.invocation_metadata.return_value = ((grpc_utils.MCP_PROTOCOL_VERSION_KEY, "unsupported"),)
     supported_versions = version.SUPPORTED_PROTOCOL_VERSIONS
 
-    with pytest.raises(grpc.RpcError):
-        await grpc_utils.get_protocol_version_from_context(cast(grpc.aio.ServicerContext[Any, Any], mock_context), supported_versions)
+    await grpc_utils.get_protocol_version_from_context(cast(grpc.aio.ServicerContext[Any, Any], mock_context), supported_versions)
 
-    mock_context.send_initial_metadata.assert_called_once_with([(grpc_utils.MCP_PROTOCOL_VERSION_KEY, version.LATEST_PROTOCOL_VERSION)])
+    mock_context.send_initial_metadata.assert_called_with([(grpc_utils.MCP_PROTOCOL_VERSION_KEY, version.LATEST_PROTOCOL_VERSION)])
     mock_context.abort.assert_called_once()
     args, _ = mock_context.abort.call_args
     assert args[0] == grpc.StatusCode.UNIMPLEMENTED

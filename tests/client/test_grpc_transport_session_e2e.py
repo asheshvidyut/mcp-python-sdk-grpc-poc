@@ -562,7 +562,12 @@ async def test_call_tool_grpc_transport_success(
             if isinstance(content_block, types.TextContent):
                 assert content_block.text == expected["text"]
             elif isinstance(content_block, types.ImageContent):
-                assert content_block.data == expected["data"]
+                try:
+                    actual_img = PILImage.open(BytesIO(base64.b64decode(content_block.data)))
+                    expected_img = PILImage.open(BytesIO(base64.b64decode(expected["data"])))
+                    assert list(actual_img.getdata()) == list(expected_img.getdata())
+                except Exception as e:
+                    pytest.fail(f"Image comparison failed: {e}")
                 assert content_block.mimeType == expected["mimeType"]
             elif isinstance(content_block, types.AudioContent):
                 assert content_block.data == expected["data"]
