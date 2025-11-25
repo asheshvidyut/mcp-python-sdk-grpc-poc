@@ -12,7 +12,7 @@ from pydantic import AnyUrl, BaseModel
 from _pytest.logging import LogCaptureFixture
 
 import pytest
-from typing import cast
+from typing import cast, Sequence
 from io import BytesIO
 from PIL import Image as PILImage
 
@@ -568,7 +568,7 @@ async def test_call_tool_grpc_transport_success(
                 try:
                     actual_img = PILImage.open(BytesIO(base64.b64decode(content_block.data)))
                     expected_img = PILImage.open(BytesIO(base64.b64decode(expected["data"])))
-                    assert cast(list[int], list(actual_img.getdata())) == cast(list[int], list(expected_img.getdata()))
+                    assert list(cast(Sequence[int], actual_img.getdata())) == list(cast(Sequence[int], expected_img.getdata()))  # type: ignore[no-any-expr]
                 except Exception as e:
                     pytest.fail(f"Image comparison failed: {e}")
                 assert content_block.mimeType == expected["mimeType"]
@@ -590,7 +590,7 @@ async def test_call_tool_grpc_transport_success(
                 try:
                     actual_img = PILImage.open(BytesIO(base64.b64decode(actual_data)))
                     expected_img = PILImage.open(BytesIO(base64.b64decode(expected_data)))
-                    assert cast(list[int], list(actual_img.getdata())) == cast(list[int], list(expected_img.getdata()))
+                    assert list(cast(Sequence[int], actual_img.getdata())) == list(cast(Sequence[int], expected_img.getdata()))  # type: ignore[no-any-expr]
                 except Exception as e:
                     pytest.fail(f"Structured content image comparison failed: {e}")
                 # Add the data back in case the objects are used elsewhere
