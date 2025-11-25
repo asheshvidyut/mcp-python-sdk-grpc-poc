@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from mcp.server.transport_session import TransportSession as ServerTransportSession
 
 
-SessionT = TypeVar("SessionT", bound=BaseSession[Any, Any, Any, Any, Any] | ClientTransportSession | ServerTransportSession)
+SessionT = TypeVar("SessionT", bound=BaseSession[Any, Any, Any, Any, Any] | "ClientTransportSession" | "ServerTransportSession")
 LifespanContextT = TypeVar("LifespanContextT")
 RequestT = TypeVar("RequestT", default=Any)
 
