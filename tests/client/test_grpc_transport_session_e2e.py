@@ -12,6 +12,9 @@ from pydantic import AnyUrl, BaseModel
 from _pytest.logging import LogCaptureFixture
 
 import pytest
+from typing import cast
+from io import BytesIO
+from PIL import Image as PILImage
 
 from mcp.client.grpc_transport_session import GRPCTransportSession
 from mcp.shared.exceptions import McpError
@@ -565,7 +568,7 @@ async def test_call_tool_grpc_transport_success(
                 try:
                     actual_img = PILImage.open(BytesIO(base64.b64decode(content_block.data)))
                     expected_img = PILImage.open(BytesIO(base64.b64decode(expected["data"])))
-                    assert list(actual_img.getdata()) == list(expected_img.getdata())
+                    assert cast(list[int], list(actual_img.getdata())) == cast(list[int], list(expected_img.getdata()))
                 except Exception as e:
                     pytest.fail(f"Image comparison failed: {e}")
                 assert content_block.mimeType == expected["mimeType"]
@@ -587,7 +590,7 @@ async def test_call_tool_grpc_transport_success(
                 try:
                     actual_img = PILImage.open(BytesIO(base64.b64decode(actual_data)))
                     expected_img = PILImage.open(BytesIO(base64.b64decode(expected_data)))
-                    assert list(actual_img.getdata()) == list(expected_img.getdata())
+                    assert cast(list[int], list(actual_img.getdata())) == cast(list[int], list(expected_img.getdata()))
                 except Exception as e:
                     pytest.fail(f"Structured content image comparison failed: {e}")
                 # Add the data back in case the objects are used elsewhere
